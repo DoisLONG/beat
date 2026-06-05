@@ -1,0 +1,48 @@
+# Copyright (C) 2025 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  retriever:
+    build:
+      context: ../../src/services/retriever/
+      additional_contexts:
+        libs: ../../src/libs/
+    image: ${REGISTRY:-localhost:5000}/ekba/retriever-new:${TAG:-latest}
+
+  chatqna:
+    build:
+      context: ../../src/
+      dockerfile: comps/router/Dockerfile
+    image: ${REGISTRY:-localhost:5000}/ekba/router:${TAG:-latest}
+
+  ekba-ui:
+    build:
+      context: ../../src/ui/
+      dockerfile: docker/Dockerfile
+    image: ${REGISTRY:-localhost:5000}/ekba/ui:${TAG:-latest}
+
+  embedding:
+    build:
+      context: ../../src/
+      dockerfile: comps/embedding/Dockerfile
+    image: ${REGISTRY:-localhost:5000}/ekba/embedding:${TAG:-latest}
+  reranking:
+    build:
+      context: ../../src/
+      dockerfile: comps/rerank/Dockerfile
+    image: ${REGISTRY:-localhost:5000}/ekba/reranking:${TAG:-latest}
+  llm:
+    build:
+      context: ../../src/
+      dockerfile: comps/llm/Dockerfile
+    image: ${REGISTRY:-localhost:5000}/ekba/llm:${TAG:-latest}
+  chathistory:
+    build:
+      context: ../../src/
+      dockerfile: comps/chathistory/Dockerfile
+    image: ${REGISTRY:-localhost:5000}/ekba/chathistory:${TAG:-latest}
+  account:
+    build:
+      context: ../../src/
+      dockerfile: comps/account/Dockerfile
+    image: ${REGISTRY:-localhost:5000}/ekba/account:${TAG:-latest}

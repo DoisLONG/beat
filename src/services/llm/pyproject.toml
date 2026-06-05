@@ -1,0 +1,28 @@
+[project]
+name = "llm"
+version = "2.0.0b"
+description = "EAP llm service"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp>=3.11.18",
+    "boto3>=1.38.10",
+    "docarray==0.40.0",
+    "fastapi>=0.115.12",
+    "httptools==0.6.4",
+    "httpx==0.27.2",
+    "huggingface-hub>=0.30.2",
+    "langchain-core==0.1.16",
+    "openai==1.52.0",
+    "opentelemetry-api>=1.32.1",
+    "opentelemetry-exporter-otlp>=1.32.1",
+    "opentelemetry-sdk>=1.32.1",
+    "pillow>=11.2.1",
+    "prometheus-fastapi-instrumentator>=7.1.0",
+    "shortuuid>=1.0.13",
+    "opea-cores",
+    "dotenv>=0.9.9",
+]
+
+[tool.uv.sources]
+opea-cores = { path = "../../libs/" }

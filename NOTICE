@@ -1,0 +1,19 @@
+Copyright (C) 2026 Intel Corporation
+SPDX-License-Identifier: Apache-2.0
+
+This repository is based on Intel OPEA (Open Platform for Enterprise AI)
+components and related Apache-2.0 licensed code.
+
+Upstream project:
+  Intel OPEA
+  https://github.com/opea-project/opea
+
+This repository contains original code, configuration, scripts, and
+modifications built on top of Intel OPEA for the Dongfang Hope intelligent
+practice system.
+
+Unless otherwise noted, repository contents are distributed under the
+Apache License, Version 2.0. See the LICENSE file for details.
+
+Third-party dependency and component inventory for this repository is
+documented in THIRD_PARTY_LICENSES.md.

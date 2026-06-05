@@ -1,0 +1,19 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+services:
+  runner:
+    image: ${REGISTRY:-localhost:5000}/ekba/tester
+    container_name: ekba-testings-runner
+    network_mode: host
+    build:
+      context: ./src
+    
+    restart: "no"
+
+    volumes:
+      - ./cases:/working/cases
+
+    environment:
+      CASES: "embedding,llm"

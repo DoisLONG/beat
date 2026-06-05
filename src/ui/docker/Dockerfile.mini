@@ -1,0 +1,32 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# Use node 20.11.1-slim as the base image
+FROM node:20.11.1-slim as vite-app
+ 
+WORKDIR /usr/app/react
+
+COPY package.json /usr/app/react
+RUN ["npm", "install"]
+
+COPY . /usr/app/react
+
+# if there is NO .env, building will be blocked, means developer must provide .env
+COPY .env.mini /usr/app/react/.env
+
+RUN ["npm", "run", "build"]
+
+
+FROM nginx:1.27.4-alpine
+
+ENV APP_BACKEND_ENDPOINT=http://localhost:8888
+ENV APP_KBS_ENDPOINT=http://localhost:7001
+ENV APP_CHATHISTORY_ENDPOINT=http://localhost:8012
+ENV APP_LLM_ENDPOINT=http://localhost:9000
+ENV APP_DOWNLOAD_SERVER=http://localhost:9001
+ENV APP_MCP_LIST=http://localhost:9999
+
+COPY --from=vite-app /usr/app/react/dist /usr/share/nginx/html
+
+COPY ./docker/default.conf.template /tmp
+COPY ./docker/env.sh /docker-entrypoint.d/50-env.sh

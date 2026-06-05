@@ -1,0 +1,21 @@
+{
+  "crawler": {
+    "max_depth": 2,
+    "filters": [
+      "https://github.com/intel-analytics/ipex-llm/**",
+      "https://github.com/intel/ipex-llm/**",
+      "https://github.com/openvinotoolkit/**",
+      "https://github.com/intel/ipex-llm-tutorial/**",
+      "https://github.com/intel/aog/**",
+      "https://www.intel.com/content/**"
+    ],
+    "allowed_extensions": [".md", ".ipynb", ".html", ".htm"],
+    "no_extension_pattern": "/[^./]*$",
+    "max_retries": 3,
+    "timeout_seconds": 60,
+    "max_requests": 1000,
+    "max_concurrency": 50,
+    "max_tasks_per_minute": 200,
+    "session_pool_size": 100
+  }
+}

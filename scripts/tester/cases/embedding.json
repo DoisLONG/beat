@@ -1,0 +1,52 @@
+{
+  "services": [
+    {
+      "name": "EKBA embedding usvc",
+      "base_url": "http://localhost:6000",
+      "health_endpoint": "/v1/health_check",
+      "test_cases": [
+        {
+          "name": "Gen embeddings for a text",
+          "endpoint": "/v1/embeddings",
+          "method": "POST",
+          "payload": {
+            "text": "Hello, world!"
+          },
+          "expected_status": 200,
+          "expected_content": {
+            "embedding": [],
+            "text": "Hello, world!"
+          }
+        }
+      ]
+    },
+    {
+      "name": "EKBA reranking usvc",
+      "base_url": "http://localhost:8000",
+      "health_endpoint": "/v1/health_check",
+      "test_cases": [
+        {
+          "name": "Rerank texts",
+          "endpoint": "/v1/reranking",
+          "method": "POST",
+          "payload": {
+            "initial_query": "What is Deep Learning?",
+            "retrieved_docs": [
+              {
+                "text": "Deep Learning is a type of machine learning."
+              },
+              {
+                "text": "Deep Learning is a Movie star."
+              }
+            ]
+          },
+          "expected_status": 200,
+          "expected_content": {
+            "query": "What is Deep Learning?",
+            "documents": ["Deep Learning is a type of machine learning."]
+          }
+        }
+      ]
+    }
+  ]
+}

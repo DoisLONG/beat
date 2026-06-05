@@ -1,0 +1,11 @@
+{
+    "intel_product":{
+        "questions":[
+            "What is Intel Advanced Matrix Extensions?",
+            "What is Intel dGPU with Media Analysis Solution playbook?",
+            "Hero features about Intel Xeon6 product.",
+            "Introduction about intel gaudi.",
+            "What's CAGRA?"
+        ]
+    }
+}

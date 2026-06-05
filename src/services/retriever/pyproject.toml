@@ -1,0 +1,48 @@
+[project]
+name = "retriever"
+version = "2.0.0b"
+description = "EAP retriever(RAG) service"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "fastapi[standard]>=0.115.12",
+    "langchain-community>=0.3.20",
+    "langchain-milvus>=0.1.8",
+    "langchain-openai>=0.3.11",
+    "opea-cores",
+    "pymilvus==2.5.6",
+    "sentence-transformers>=4.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.7.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.5.1",
+    "pre-commit>=3.3.3",
+]
+prod = [
+    "python-json-logger>=2.0.7",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py312']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.uv.sources]
+opea-cores = { path = "../../libs/" }

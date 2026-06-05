@@ -1,0 +1,29 @@
+[project]
+name = "opea-cores"
+version = "1.2.0"
+description = "Core modules from OPEA upstream"
+authors = [
+    { name = "Community Developers", email = "people@opea.dev" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp>=3.11.14",
+    "docarray[full]==0.40.0",
+    "fastapi>=0.115.12",
+    "numpy>=2.2.4",
+    "prometheus-fastapi-instrumentator>=7.1.0",
+    "pydantic>=2.11.1",
+    "requests>=2.32.3",
+    "shortuuid>=1.0.13",
+    "uvicorn>=0.34.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+packages = ["opea_cores"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["opea_cores"]

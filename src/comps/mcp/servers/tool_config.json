@@ -1,0 +1,16 @@
+[
+  {
+    "tool_name": "Web Search Tool",
+    "tool_path": "servers/search_tool.py",
+    "description": "A web search tool that can use internet search to supplement real-time content.",
+    "type": "localhost",
+    "flag": "RAG"
+  },
+  {
+    "tool_name": "Weather Query Tool",
+    "tool_path": "servers/weather_tool.py",
+    "description": "Can retrieve weather conditions for a specified map at a specified time.",
+    "type": "web",
+    "flag": "OTHER"
+  }
+]

@@ -1,0 +1,31 @@
+**/bin/
+*.out
+*.swp
+**/Chart.lock
+**/charts/*.tgz
+.DS_Store
+
+# build
+bazel-*
+compile_commands.json
+.gitconfig
+deployment
+
+
+# runtime
+.env
+.env.*
+
+# Editor directories and files
+.vscode
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.bak
+
+# py
+__pycache__

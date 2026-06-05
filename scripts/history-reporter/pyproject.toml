@@ -1,0 +1,11 @@
+[project]
+name = "history-reporter"
+version = "0.1.0"
+description = "EKBA history reporting tool"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.2.3",
+    "pymongo>=4.11.3",
+    "pytz>=2025.1",
+]

@@ -1,0 +1,27 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+services:
+  runner:
+    image: ${REGISTRY:-localhost:5000}/ekba/reporter:${TAG:-latest}
+    container_name: ekba-chathistory-reporter
+    network_mode: host
+    build:
+      context: .
+      # args:
+      #   http_proxy: ${http_proxy}
+      #   https_proxy: ${https_proxy}
+      #   no_proxy: ${no_proxy}
+    command: >
+      --database ${DATABASE}
+      --collection ${COLLECTION}
+      --host ${HOST}
+      --port ${PORT}
+      --start-time "${STARTTIME}"
+      --end-time "${ENDTIME}"
+      --timezone ${TIMEZONE}
+      --output-dir ${OUTPUTDIR}
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/output:/working/${OUTPUTDIR}
+    restart: no

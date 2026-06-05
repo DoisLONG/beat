@@ -1,0 +1,64 @@
+{
+  "services": [
+    {
+      "name": "vLLM serving",
+      "base_url": "http://localhost:8008",
+      "test_cases": [
+        {
+          "name": "Simple chat",
+          "endpoint": "/v1/chat/completions",
+          "method": "POST",
+          "payload": {
+            "model": "/weights/DeepSeek-R1-BF16-w8afp8-static-no-ste-G2",
+            "messages": [{"role": "user", "content": "What is Deep Learning?"}],
+            "max_tokens": 128,
+            "temperature": 0,
+            "stream": true
+          },
+          "expected_status": 200
+        }
+      ]
+    },
+    {
+      "name": "EKBA llm usvc",
+      "base_url": "http://localhost:9000",
+      "health_endpoint": "/v1/health_check",
+      "test_cases": [
+        {
+          "name": "Simple chat calling",
+          "endpoint": "/v1/chat/completions",
+          "method": "POST",
+          "payload": {
+            "messages": [{"role": "user", "content": "Number 10 plus with 10, what is the result?"}],
+            "max_new_tokens":17,
+            "top_p":0.95,
+            "temperature":0,
+            "stream":true
+          },
+          "timeout": 30,
+          "expected_status": 200,
+          "expected_content": {
+            "model": "/weights/DeepSeek-R1-BF16-w8afp8-static-no-ste-G2"
+          }
+        },
+        {
+          "name": "Mimic reranker calling",
+          "endpoint": "/v1/chat/completions",
+          "method": "POST",
+          "payload": {
+            "query":"Who are you?",
+            "max_new_tokens":17,
+            "top_p":0.95,
+            "temperature":0.01,
+            "stream":false
+          },
+          "timeout": 30,
+          "expected_status": 200,
+          "expected_content": {
+            "model": "/weights/DeepSeek-R1-BF16-w8afp8-static-no-ste-G2"
+          }
+        }
+      ]
+    }
+  ]
+}
