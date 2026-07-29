@@ -1,164 +1,344 @@
-# BEAT: OPEA-based Enterprise SOP Coaching and Assessment Agent
+# BEAT: OPEA-aligned Enterprise SOP Coaching and Assessment Agent
 
-BEAT is an enterprise AI coaching and assessment platform designed for SOP-driven workforce training. It transforms enterprise SOP documents, training materials, operational procedures, and multimedia knowledge into traceable knowledge bases, interactive Q&A, automated exam generation, answer assessment, and evidence-backed learning feedback.
+> AI for Good Innovation Challenge on Generative AI Applications for Enterprise Scenarios Using OPEA  
+> Team: BlueDot BEAT Team  
+> Repository: https://github.com/DoisLONG/beat
 
-This project is submitted to the **AI for Good Innovation Challenge on Generative AI Applications for Enterprise Scenarios Using OPEA**.
+BEAT is an enterprise intelligent coaching and assessment system for SOP-driven workforce training. It is designed for internal enterprise scenarios such as standard operating procedures, operation manuals, emergency drills, safety training, job onboarding, and role-based competency assessment.
 
-The goal of BEAT is to demonstrate how OPEA-style modular GenAI components can be used to build a practical enterprise application for frontline worker training, continuous learning, and operational knowledge transfer.
+The system uses large language models, retrieval-augmented generation, vector retrieval, microservice orchestration, and learning-state management to convert enterprise training materials into an interactive learning workflow. It supports knowledge preparation, SOP-based question answering, intelligent exam coaching, answer assessment, follow-up explanation, learning records, and management dashboards.
 
----
-
-## 1. Why BEAT Matters
-
-In many industries, young workers do not start their careers in universities or research labs. They start in factories, restaurants, warehouses, retail stores, service desks, and field operation sites.
-
-For them, the education gap is not an abstract concept. It appears in very practical moments: when a new machine is deployed, when a new safety rule is released, when a complex SOP is updated, or when they are expected to perform a task after only a short training session.
-
-Traditional enterprise training often depends on thick manuals, one-time classroom sessions, fragmented mentoring, and the availability of experienced workers. As a result, frontline workers may struggle to access knowledge at the moment they need it most.
-
-BEAT is designed to address this gap.
-
-By using AI, RAG, LLM services, vector retrieval, workflow orchestration, and evidence-backed assessment, BEAT transforms enterprise knowledge into interactive learning experiences. It helps frontline workers understand complex procedures, practice key steps, receive immediate feedback, and build confidence before performing real tasks.
-
-BEAT is not only about making enterprise training more efficient. It is about giving frontline workers a fairer and more continuous path to learn, improve, and grow in their careers.
+This repository is submitted to the **AI for Good Innovation Challenge on Generative AI Applications for Enterprise Scenarios Using OPEA**. For the challenge, BEAT is positioned as an **OPEA-aligned enterprise GenAI application** that demonstrates how modular AI components can be used to solve a practical enterprise training problem.
 
 ---
 
-## 2. Problem Statement
+## 1. Background
 
-Enterprise SOP training faces several common challenges:
+Enterprise training is often limited by static documents, one-time classroom sessions, and fragmented mentoring.
 
-- SOP documents are often long, fragmented, and difficult for frontline workers to understand.
-- Training sessions are usually one-time events, while real work requires repeated practice and timely feedback.
-- Enterprise knowledge is scattered across PDF files, manuals, videos, spreadsheets, and experienced employees.
-- Traditional Q&A systems may generate answers without reliable evidence or source references.
-- Assessment results are often not connected to learning materials, making it difficult to explain why an answer is correct or incorrect.
-- New procedures, safety rules, and equipment updates are difficult to distribute and reinforce at scale.
+In many frontline work scenarios, employees need to understand complex procedures before performing real tasks. These procedures may involve equipment operation, safety rules, emergency response, quality inspection, service processes, or internal compliance requirements.
 
-These challenges create a knowledge access gap between enterprise experts and frontline workers.
+However, enterprise knowledge is often scattered across SOP documents, PDF manuals, videos, spreadsheets, and the experience of senior workers. New employees may face several practical difficulties:
 
----
+- SOP documents are long and difficult to understand.
+- Training happens once, but real work requires repeated practice.
+- Experienced mentors are not always available.
+- Workers may not know which step they missed after answering incorrectly.
+- Assessment results are often not connected back to the original training material.
+- Enterprises need a scalable way to train and evaluate workers across different sites and roles.
 
-## 3. Solution Overview
-
-BEAT provides an AI-powered coaching and assessment workflow for enterprise SOP training.
-
-The system supports the following workflow:
-
-1. Ingest SOP documents, manuals, training materials, and operational content.
-2. Parse, chunk, and structure the knowledge.
-3. Build a vector-based knowledge base.
-4. Provide RAG-based Q&A with traceable references.
-5. Generate scenario-based training questions.
-6. Assess user answers using LLM-based evaluation.
-7. Provide evidence-backed feedback linked to the original SOP content.
-8. Generate learning records and assessment summaries.
-
-The prototype focuses on a manufacturing-style SOP training scenario, but the same architecture can be extended to education, healthcare, customer support, public service, and other enterprise domains.
+BEAT is designed to turn static enterprise knowledge into a continuous, interactive, and evidence-backed learning process.
 
 ---
 
-## 4. Key Features
+## 2. Project Goal
 
-### SOP Knowledge Ingestion
+The goal of BEAT is to provide an AI-powered SOP coaching and assessment workflow for enterprise workforce training.
 
-BEAT processes enterprise SOP documents and training materials, including:
+The system aims to:
 
-- SOP manuals
-- Safety procedures
-- Operational guidelines
-- Training documents
-- Video/audio-derived text
-- Structured and semi-structured content
+- Transform enterprise SOPs and training materials into reusable knowledge assets.
+- Provide RAG-based Q&A grounded in source materials.
+- Generate training and exam questions from enterprise knowledge.
+- Evaluate user answers and provide feedback.
+- Support follow-up explanation and review.
+- Keep learning records and session history.
+- Help managers understand learning progress and training effectiveness.
 
-### RAG-based Enterprise Q&A
-
-The system retrieves relevant knowledge from the vector database and generates answers grounded in source materials.
-
-Key capabilities:
-
-- Context-aware answers
-- Evidence-backed responses
-- Reduced hallucination risk
-- Source traceability
-
-### Automated Exam Generation
-
-BEAT can generate training questions based on enterprise SOP content.
-
-Supported question types may include:
-
-- Single-choice questions
-- Multiple-choice questions
-- Short-answer questions
-- Scenario-based operational questions
-
-### Answer Assessment
-
-The system evaluates user answers based on SOP knowledge, expected actions, and task context.
-
-Assessment output may include:
-
-- Score
-- Correctness judgment
-- Explanation
-- Missing key points
-- Suggested review content
-- Source references
-
-### Learning Feedback Loop
-
-BEAT connects training, practice, assessment, and review into a closed loop.
-
-A typical learning loop includes:
-
-1. Learn from SOP content.
-2. Practice with generated questions.
-3. Submit answers.
-4. Receive evidence-backed feedback.
-5. Review weak points.
-6. Continue improvement.
-
-### Multimodal Extension
-
-The architecture can be extended to handle video-based training materials through ASR and structured content extraction.
-
----
-
-## 5. OPEA-based Architecture
-
-BEAT follows an OPEA-compatible modular GenAI architecture. The system is designed around reusable components such as LLM services, RAG pipelines, vector databases, orchestration workflows, and guardrail-oriented controls.
-
-### Component Mapping
-
-| OPEA Component | BEAT Module / Capability | Description |
-|---|---|---|
-| Knowledge Ingestion | `dataprep`, `asr`, `excel` | Parses documents, audio/video transcripts, and structured training materials |
-| Embedding & Indexing | RAG pipeline | Converts SOP content into searchable vector representations |
-| Vector DB | Milvus | Stores and retrieves enterprise knowledge chunks |
-| LLM Service | External or configurable LLM service | Generates answers, questions, explanations, and assessment feedback |
-| RAG Pipeline | SOP Q&A workflow | Retrieves source knowledge before generation |
-| Orchestration | `smart-practice`, learning workflow | Coordinates question generation, answering, scoring, feedback, and review |
-| Guardrails | Evidence grounding, state control, source references | Reduces hallucination and improves answer reliability |
-| Evaluation | Assessment and learning report | Evaluates answer quality, learning progress, and SOP understanding |
-
-### High-level Workflow
+BEAT focuses on the complete learning loop:
 
 ```text
-SOP / Training Materials / Video Transcripts
-                ↓
-        Knowledge Ingestion
-                ↓
-      Chunking and Structuring
-                ↓
-       Embedding + Vector DB
-                ↓
-          RAG Retrieval
-                ↓
-             LLM Service
-                ↓
-      Agent / Workflow Orchestration
-                ↓
-  Coaching / Exam / Assessment / Feedback
-                ↓
-     Evidence-backed Learning Report
+Knowledge ingestion
+    -> SOP understanding
+    -> interactive coaching
+    -> exam generation
+    -> answer assessment
+    -> feedback and review
+    -> learning records and dashboard
+```
+
+---
+
+## 3. AI for Good Relevance
+
+BEAT is not only an enterprise productivity tool. It also addresses a broader knowledge-access problem for frontline workers.
+
+Many workers begin their careers directly in factories, warehouses, restaurants, stores, service desks, or field operation sites. For them, access to knowledge is often practical and time-sensitive. They need to understand how to perform a task, how to avoid mistakes, and how to improve step by step.
+
+BEAT provides an always-available digital coaching layer for these workers. When a worker cannot understand a long manual, the system can help explain the procedure. When a worker forgets a key step, the system can generate practice questions. When a worker answers incorrectly, the system can provide feedback and point back to the relevant SOP content.
+
+This makes workplace knowledge more accessible, repeatable, and traceable. It helps frontline workers continue learning inside real work environments.
+
+---
+
+## 4. OPEA Alignment
+
+OPEA, the Open Platform for Enterprise AI, promotes modular, composable, and production-oriented GenAI applications for enterprise scenarios.
+
+BEAT follows the same architectural direction. The system is organized around modular services for data preparation, retrieval, generation, orchestration, assessment, learning, and management.
+
+### 4.1 OPEA-style Component Mapping
+
+| OPEA Concept | BEAT Capability | Description |
+| --- | --- | --- |
+| Knowledge ingestion | `dataprep`, `asr`, `excel` | Processes documents, transcripts, structured files, and training materials |
+| RAG pipeline | SOP-based Q&A and knowledge retrieval | Retrieves relevant enterprise knowledge before LLM generation |
+| Vector database | Milvus-based retrieval layer | Stores and retrieves vectorized enterprise knowledge |
+| LLM service | Q&A, question generation, scoring, explanation | Generates answers, questions, feedback, and assessment results |
+| Orchestration | `smart-practice` workflow | Coordinates coaching, exam flow, answer assessment, and follow-up |
+| Guardrail-oriented design | Source grounding and learning-state control | Reduces hallucination and improves traceability |
+| Evaluation | Answer assessment and learning reports | Measures answer quality and learning progress |
+
+### 4.2 High-level Architecture
+
+```text
+Enterprise SOPs / Manuals / Training Materials / Videos
+                         |
+                         v
+              Data Preparation Services
+        document parsing / ASR / structured extraction
+                         |
+                         v
+             Knowledge Processing and Indexing
+            chunking / metadata / vectorization
+                         |
+                         v
+                  Vector Retrieval Layer
+                         |
+                         v
+                    RAG-based Q&A
+                         |
+                         v
+                  LLM Service Layer
+       answer generation / question generation / scoring
+                         |
+                         v
+              Smart Practice Orchestration
+       exam flow / follow-up coaching / state management
+                         |
+                         v
+          Learning Service / History / Dashboard
+```
+
+---
+
+## 5. Core Capabilities
+
+### 5.1 Knowledge Preparation
+
+BEAT prepares enterprise knowledge from SOP documents, operation manuals, safety materials, emergency drill documents, audio/video transcripts, and structured files.
+
+The knowledge preparation layer is responsible for parsing, converting, structuring, and preparing materials for downstream retrieval and training workflows.
+
+### 5.2 RAG-based SOP Q&A
+
+BEAT uses retrieval-augmented generation to answer user questions based on enterprise materials.
+
+The purpose is to make answers:
+
+- More relevant to the enterprise context.
+- Grounded in retrieved source knowledge.
+- Easier to verify and trace.
+- More suitable for SOP training and operational learning.
+
+### 5.3 Intelligent Exam Coaching
+
+The `smart-practice` service is the core coaching component. It supports question generation, user answer processing, scoring, follow-up explanation, and learning feedback.
+
+This turns static SOP content into an interactive training process.
+
+### 5.4 Answer Assessment
+
+BEAT evaluates user answers based on the expected procedure, key knowledge points, and retrieved SOP context.
+
+Assessment results may include:
+
+- Correctness judgment.
+- Score or assessment conclusion.
+- Explanation of missing points.
+- Suggested review direction.
+- Reference to related SOP content.
+
+### 5.5 Learning Records and Management
+
+BEAT supports learning history, session management, and dashboard-style analysis. This helps both learners and administrators understand training progress and weak points.
+
+---
+
+## 6. System Modules
+
+The current system contains the following major service modules:
+
+| Module | Description |
+| --- | --- |
+| `dataprep` | Data preprocessing and knowledge preparation |
+| `smart-practice` | Intelligent coaching, exam generation, answer assessment, and feedback |
+| `learn` | Learning service and learning records |
+| `system-common` | Common system management service |
+| `asr` | Audio/video speech-to-text service |
+| `excel` | Structured processing service for spreadsheet or extracted multimodal content |
+| `dashboard` | Dashboard and analytics service |
+| `account` | Account and user management |
+| `chathistory` | Conversation history and session management |
+
+The system may use the following infrastructure components:
+
+- MySQL
+- MongoDB
+- Redis
+- Milvus
+- MinIO or object storage
+- External or configurable LLM service
+- Document parsing service
+- ASR service
+
+---
+
+## 7. Deployment
+
+### 7.1 Runtime Requirements
+
+The challenge requires a single-node evaluation environment. BEAT is designed to run in a single-node Docker Compose environment for the submitted prototype.
+
+Recommended environment:
+
+- OS: Ubuntu 22.04
+- CPU: 4 cores or above
+- Memory: 8GB to 64GB RAM, depending on enabled services
+- Disk: 200GB recommended for full local deployment
+- GPU: Optional
+- Docker
+- Docker Compose
+
+### 7.2 Start the System
+
+The current recommended deployment entry is the Docker Compose quickstart script:
+
+```bash
+cd deployment/docker-compose
+bash quickstart-dfxw.sh
+```
+
+The script starts the required infrastructure services and BEAT application services.
+
+### 7.3 Stop the System
+
+```bash
+cd deployment/docker-compose
+bash quickstart-dfxw.sh stop
+```
+
+### 7.4 Deployment Notes
+
+Before running the system, make sure that required environment variables, model service endpoints, object storage settings, and database settings are correctly configured.
+
+Do not commit real API keys, customer data, private service URLs, internal IP addresses, production credentials, or confidential SOP documents to this repository.
+
+---
+
+## 8. Demo Workflow
+
+A typical evaluator workflow is:
+
+1. Start the system with the Docker Compose quickstart script.
+2. Log in to the web interface.
+3. Import or select an enterprise SOP/training material.
+4. Ask SOP-related questions.
+5. Review the generated answers and related knowledge context.
+6. Start an intelligent practice or exam session.
+7. Submit answers as a learner.
+8. Review the assessment result and explanation.
+9. Check learning records or dashboard information.
+
+The expected demonstration flow is:
+
+```text
+SOP material
+    -> knowledge preparation
+    -> RAG-based Q&A
+    -> exam generation
+    -> answer assessment
+    -> feedback and learning record
+```
+
+---
+
+## 9. Evaluation Focus
+
+This project is aligned with the AI for Good OPEA challenge evaluation criteria.
+
+### 9.1 Creativity and Business Value
+
+BEAT addresses a real enterprise training problem. It helps enterprises convert static SOP documents into interactive learning and assessment workflows.
+
+Business value includes:
+
+- Faster onboarding.
+- Lower training cost.
+- Better safety compliance.
+- Reusable enterprise knowledge.
+- Traceable assessment results.
+- Scalable training across teams and sites.
+
+### 9.2 Technical Implementation
+
+BEAT demonstrates an OPEA-aligned modular GenAI architecture:
+
+- Knowledge ingestion.
+- RAG-based retrieval.
+- Vector database support.
+- LLM-based generation and assessment.
+- Workflow orchestration.
+- Guardrail-oriented source grounding.
+- Learning records and dashboard analysis.
+
+### 9.3 Prototype Quality
+
+The prototype demonstrates a complete workflow from enterprise knowledge preparation to training, assessment, and feedback.
+
+---
+
+## 10. Data and Privacy
+
+This repository should only contain code, configuration templates, and data that are suitable for public or challenge evaluation.
+
+The submitted version should not include:
+
+- Real customer SOP documents.
+- Customer confidential information.
+- Personal sensitive information.
+- Internal IP addresses.
+- Private service URLs.
+- API keys or tokens.
+- Production credentials.
+- Private logs.
+
+Any demo data used for the challenge should be public, synthetic, or properly authorized.
+
+---
+
+## 11. Open-source License
+
+This project is licensed under the Apache License 2.0.
+
+See the `LICENSE` file for details.
+
+All third-party dependencies used in the submitted solution should be compatible with Apache 2.0 or MIT-style open-source licensing requirements.
+
+---
+
+## 12. Challenge Submission Information
+
+- **Challenge:** AI for Good Innovation Challenge on Generative AI Applications for Enterprise Scenarios Using OPEA
+- **Team:** BlueDot BEAT Team
+- **Project name:** BEAT: OPEA-aligned Enterprise SOP Coaching and Assessment Agent
+- **Project URL:** https://github.com/DoisLONG/beat
+- **Target scenario:** Enterprise SOP training and assessment
+- **Primary vertical:** Manufacturing / enterprise workforce training
+- **OPEA-related components:** LLM, RAG, vector database, orchestration, guardrail-oriented design
+
+---
+
+## 13. Contact
+
+For questions about this project, please use the GitHub repository issue or contact the project maintainer.
