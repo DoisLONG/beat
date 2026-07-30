@@ -342,3 +342,18 @@ All third-party dependencies used in the submitted solution should be compatible
 ## 13. Contact
 
 For questions about this project, please use the GitHub repository issue or contact the project maintainer.
+
+
+
+## Online Demo Environment
+
+An online demo environment is available for challenge evaluation:
+
+- Demo URL: `https://14.103.144.187:30111/dashboard`
+- Demo account: `user1-en`
+- Demo password: `admin123`
+
+This demo environment is provided for evaluation and functional review. It is a test environment with limited access permissions.
+
+If a browser shows a certificate warning, please continue to the site for demo evaluation.
+
