@@ -1,0 +1,139 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# Default values for data-prep.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Configurations for OPEA microservice data-prep
+# Set it as a non-null string, such as true, if you want to enable logging.
+LOG_LEVEL: ""
+
+# data-prep needs to talk to different vector-DB backend, i.e. Redis, Milvus
+# Default is to use Redis as vector-DB backend
+DATAPREP_BACKEND: "REDIS"
+REDIS_HOST: ""
+REDIS_PORT: 6379
+REDIS_SSL: false
+REDIS_PASSWORD: ""
+REDIS_USERNAME: ""
+INDEX_NAME: "rag_redis"
+KEY_INDEX_NAME: "file-keys"
+SEARCH_BATCH_SIZE: 10
+
+# Uncomment and set the following settings to use Milvus as vector-DB backend
+# DATAPREP_BACKEND: "MILVUS"
+MILVUS_HOST: ""
+MILVUS_PORT: 19530
+COLLECTION_NAME: "rag_milvus"
+
+# data-prep can do embedding locally or talk to remote TEI service to do embedding.
+# TEI_EMBEDDING_ENDPOINT takes precedence over LOCAL_EMBEDDING_MODEL.
+# TEI inference service URL, e.g. http://<service-name>:<port>
+TEI_EMBEDDING_ENDPOINT: ""
+# local embedding model
+LOCAL_EMBEDDING_MODEL: ""
+
+# The following 2 settings are used to wait for dependency DB service to be ready.
+# Normally we don't need to set them unless the init-containers keeps failing.
+# Timeout in seconds for each wait
+# waitTimeout: 1
+# Total timeout in seconds for all wait
+# retryTimeoutSeconds: 60
+
+replicaCount: 1
+
+image:
+  repository: opea/dataprep
+  # Uncomment the following line to set desired image pull policy if needed, as one of Always, IfNotPresent, Never.
+  # pullPolicy: ""
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+port: 5000
+service:
+  type: ClusterIP
+  port: 6007
+
+resources:
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+readinessProbe:
+  httpGet:
+    path: v1/health_check
+    port: data-prep
+  initialDelaySeconds: 5
+  periodSeconds: 5
+startupProbe:
+  httpGet:
+    path: v1/health_check
+    port: data-prep
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 120
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+global:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  # service account name to be shared with all parent/child charts.
+  # If set, it will overwrite serviceAccount.name.
+  # If set, and serviceAccount.create is false, it will assume this service account is already created by others.
+  sharedSAName: ""
+
+  # Install Prometheus serviceMonitors for service components
+  monitoring: false
+
+  # Prometheus Helm install release name needed for serviceMonitors
+  prometheusRelease: prometheus-stack
+
+# For CI tests only
+tei:
+  enabled: false
+milvus:
+  enabled: false
+redis-vector-db:
+  enabled: false

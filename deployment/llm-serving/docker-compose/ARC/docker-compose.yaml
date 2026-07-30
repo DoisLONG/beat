@@ -1,0 +1,36 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  vllm-arc-server:
+    image: intelanalytics/ipex-llm-serving-xpu:2.2.0-b17
+    container_name: vllm-service
+    privileged: true
+    ports:
+      - "18008:80"
+    devices:
+      - "/dev/dri:/dev/dri"  # Device mapping
+    volumes:
+      - "./models:/weights"
+      - "./workspace:/llm/workspace"
+    shm_size: 16g
+    environment:
+      VLLM_TORCH_PROFILER_DIR: "/mnt"
+      HF_ENDPOINT: ${HF_ENDPOINT}
+      no_proxy: ${no_proxy}
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+      HF_TOKEN: ${HUGGINGFACEHUB_API_TOKEN}
+      LLM_MODEL: ${LLM_MODEL}
+      N_ARC: 4
+      TENSOR_PARALLEL_SIZE: 4
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 100
+    entrypoint: /bin/bash /llm/workspace/start-vllm-service.sh
+
+networks:
+  default:
+    driver: bridge

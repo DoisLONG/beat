@@ -1,0 +1,170 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# shared environment variables to be applied INSIDE containers
+# while .env file is used to set the variables OUTSIDE containers
+x-shared-env: &shared-envs
+  MILVUS_HOST: ${MILVUS_HOST:-milvus-standalone}
+  MILVUS_PORT: ${MILVUS_PORT:-19530}
+
+  HF_ENDPOINT: ${HF_ENDPOINT:-https://hf-mirror.com}
+  HUGGINGFACEHUB_API_TOKEN: ${HUGGINGFACEHUB_API_TOKEN}
+  HF_HUB_OFFLINE: 1
+  HUGGINGFACE_HUB_CACHE: "/home/user/.cache/huggingface/hub/"
+  HF_HUB_DISABLE_PROGRESS_BARS: 1
+  HF_HUB_ENABLE_HF_TRANSFER: 0
+
+  EMBEDDING_RERANKER_BACKEND: ${EMBEDDING_RERANKER_BACKEND}
+
+  OVMS_EMBEDDING_ENDPOINT: ${OVMS_EMBEDDING_ENDPOINT}
+  OVMS_EMBEDDING_MODEL: ${OVMS_EMBEDDING_MODEL}
+  embedding_ctx_length: ${embedding_ctx_length}
+  OVMS_RERANKING_ENDPOINT: ${OVMS_RERANKING_ENDPOINT}
+  OVMS_RERANKING_MODEL: ${OVMS_RERANKING_MODEL}
+
+  TEI_EMBEDDING_ENDPOINT: ${TEI_EMBEDDING_ENDPOINT}
+  TEI_RERANKING_ENDPOINT: ${TEI_RERANKING_ENDPOINT}
+
+  OUTSTANDING_SCORE: ${OUTSTANDING_SCORE}
+
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+services:
+  chathistory:
+    container_name: eap-chathistory
+    image: ${REGISTRY:-localhost:5000}/ekba/chathistory:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    environment:
+      MONGO_HOST: ${MONGO_HOST:-mongodb}
+      MONGO_PORT: ${MONGO_PORT:-27017}
+      MONGO_DB_NAME: ${MONGO_DB_NAME:-OPEA.EAP}
+      MONGO_COLLECTION_NAME: ${MONGO_COLLECTION_NAME:-ChatHistory}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+  router:
+    container_name: eap-router
+    image: ${REGISTRY:-localhost:5000}/ekba/router:${TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      - embedding-usvc
+      - reranking-usvc
+      - mcp-usvc
+      - llm-usvc
+      - retriever
+    networks:
+      - eap-network
+    environment:
+      - EMBEDDING_SERVICE_HOST_IP=embedding-usvc
+      - RETRIEVER_SERVICE_HOST_IP=retriever
+      - RETRIEVER_SERVICE_PORT=7001
+      - RERANK_SERVICE_HOST_IP=reranking-usvc
+      - LLM_SERVICE_HOST_IP=llm-usvc
+      - MCP_SERVICE_HOST_IP=mcp-usvc
+      - ENABLE_RERANK=${ENABLE_RERANK:-true}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+  ui:
+    container_name: ekba-ui
+    image: ${REGISTRY:-localhost:5000}/ekba/ui:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - ${EKBA_UI_PORT}:80
+    environment:
+      - APP_BACKEND_ENDPOINT="http://router:8888"
+      - APP_KBS_ENDPOINT="http://retriever:7001"
+      - APP_CHATHISTORY_ENDPOINT="http://chathistory:6022"
+      - APP_LLM_ENDPOINT="http://llm-usvc:9000"
+      - APP_DOWNLOAD_SERVER="http://minio:9000"
+      - APP_MCP_LIST="http://mcp-usvc:9999"
+
+  embedding-usvc:
+    container_name: eap-embedding-usvc
+    image: ${REGISTRY:-localhost:5000}/ekba/embedding:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    environment:
+      <<: *shared-envs
+
+  reranking-usvc:
+    container_name: eap-reranking-usvc
+    image: ${REGISTRY:-localhost:5000}/ekba/reranking:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    environment:
+      <<: *shared-envs
+
+  retriever:
+    container_name: eap-retriever
+    image: ${REGISTRY:-localhost:5000}/ekba/retriever-new:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - ${EAP_RETRIEVER_PORT}:7001
+    volumes:
+      - ./kbs-info:/tmp/kbs-info
+    environment:
+      <<: *shared-envs
+      HUGGINGFACE_HUB_CACHE: "/home/app/.cache/huggingface/hub/"
+
+  llm-usvc:
+    container_name: eap-llm-usvc
+    image: ${REGISTRY:-localhost:5000}/ekba/llm:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    environment:
+      <<: *shared-envs
+      LLM_MODEL: ${LLM_MODEL}
+      vLLM_ENDPOINT: ${vLLM_ENDPOINT}
+      FILTER_QUERIES: ${FILTER_QUERIES:-0}
+
+  mcp-usvc:
+    container_name: eap-mcp-usvc
+    image: ${REGISTRY:-localhost:5000}/ekba/mcp:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    environment:
+      MODEL_API_KEY: ${LLM_KEY}
+      MODEL_NAME: ${LLM_MODEL}
+      MODEL_BASE_URL: ${vLLM_ENDPOINT}
+      AMAP_API_KEY: ${AMAP_API_KEY}
+      WEBSEARCH_API_URL: http://websearch-usvc:7050/v1/web_search
+
+  websearch-usvc:
+    container_name: eap-websearch
+    image: ${REGISTRY:-localhost:5000}/ekba/websearch:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - ${EKBA_WEBSEARCH_PORT}:7050
+    environment:
+      BING_API_KEY: ${BING_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GOOGLE_CX: ${GOOGLE_CX}
+      SEARCH_ENGINE_ORDER: ${SEARCH_ENGINE_ORDER:-"google,bing,duckduckgo"}
+
+  smart-practice-usvc:
+    container_name: eap-smart-practice
+    image:  ${REGISTRY:-localhost:5000}/ekba/smart-practice:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    environment:
+      <<: *shared-envs
+      TOTAL_ROUNDS: ${TOTAL_ROUNDS:-10}
+      TRAIN_LLM_ENDPOINT: ${TRAIN_LLM_ENDPOINT}
+      TRAIN_LLM_MODEL: ${TRAIN_LLM_MODEL}
+      OPENAI_API_KEY: ${QWEN_API_KEY}
+
+networks:
+  eap-network:
+    external: true

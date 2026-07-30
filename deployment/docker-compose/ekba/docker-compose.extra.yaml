@@ -1,0 +1,81 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# shared environment variables to be applied INSIDE containers
+# while .env file is used to set the variables OUTSIDE containers
+x-shared-env: &shared-envs
+  MILVUS_HOST: ${MILVUS_HOST}
+  MILVUS_PORT: ${MILVUS_PORT}
+
+  HF_ENDPOINT: ${HF_ENDPOINT}
+  HUGGINGFACEHUB_API_TOKEN: ${HUGGINGFACEHUB_API_TOKEN}
+  HF_HUB_OFFLINE: 1
+  HUGGINGFACE_HUB_CACHE: "/home/user/.cache/huggingface/hub/"
+  HF_HUB_DISABLE_PROGRESS_BARS: 1
+  HF_HUB_ENABLE_HF_TRANSFER: 0
+
+  EMBEDDING_RERANKER_BACKEND: ${EMBEDDING_RERANKER_BACKEND}
+
+  OVMS_EMBEDDING_ENDPOINT: ${OVMS_EMBEDDING_ENDPOINT}
+  OVMS_EMBEDDING_MODEL: ${OVMS_EMBEDDING_MODEL}
+  embedding_ctx_length: ${embedding_ctx_length}
+  OVMS_RERANKING_ENDPOINT: ${OVMS_RERANKING_ENDPOINT}
+  OVMS_RERANKING_MODEL: ${OVMS_RERANKING_MODEL}
+
+  TEI_EMBEDDING_ENDPOINT: ${TEI_EMBEDDING_ENDPOINT}
+  TEI_RERANKING_ENDPOINT: ${TEI_RERANKING_ENDPOINT}
+
+  LOG_LEVEL: ${LOG_LEVEL}
+
+services:
+  dataprep:
+    container_name: eap-legacy-dataprep
+    image: ${REGISTRY:-localhost:5000}/ekba/dataprep:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - ${EKBA_DATAPREP_PORT}:6010
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/upload_files:/home/user/comps/dataprep/uploaded_files
+    environment:
+      <<: *shared-envs
+
+  retriever-old:
+    container_name: eap-legacy-retriever
+    image: ${REGISTRY:-localhost:5000}/ekba/retriever:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    environment:
+      <<: *shared-envs
+
+  ui-mini:
+    container_name: ekba-ui-mini
+    image: ${REGISTRY:-localhost:5000}/ekba/ui-mini:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - ${EKBA_MINI_UI_PORT}:80
+    environment:
+      - APP_BACKEND_ENDPOINT="http://router:8888"
+      - APP_KBS_ENDPOINT="http://retriever:7001"
+      - APP_CHATHISTORY_ENDPOINT="http://chathistory:6022"
+      - APP_LLM_ENDPOINT="http://llm-usvc:9000"
+      - APP_DOWNLOAD_SERVER="http://minio:9000"
+
+  webcrawler:
+    container_name: eap-webcrawler
+    image: ${REGISTRY:-localhost:5000}/ekba/webcrawler:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - 17010:7010
+    volumes:
+      - ./crawed-pages:/app/uploaded_files
+
+networks:
+  eap-network:
+    external: true

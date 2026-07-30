@@ -1,0 +1,173 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# Default values for vllm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+# Enabling HPA will:
+# - Ignore above replica count, as it will be controlled by HPA
+# - Add example HPA scaling rules with custom metrics thresholds
+# - Require custom metrics ConfigMap available in the main application chart
+autoscaling:
+  maxReplicas: 4
+  enabled: false
+
+# empty for CPU (longer latencies are tolerated before HPA scaling unaccelerated service)
+accelDevice: ""
+
+port: 2080
+shmSize: 1Gi
+image:
+  repository: opea/vllm
+  # Uncomment the following line to set desired image pull policy if needed, as one of Always, IfNotPresent, Never.
+  # pullPolicy: ""
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+#  readOnlyRootFilesystem: true
+#  allowPrivilegeEscalation: false
+#  runAsNonRoot: true
+#  runAsUser: 1000
+#  capabilities:
+#    drop:
+#    - ALL
+#  seccompProfile:
+#    type: RuntimeDefault
+
+service:
+  type: ClusterIP
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+extraCmdArgs: []
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 240
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 24
+startupProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 1200
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+LLM_MODEL_ID: Intel/neural-chat-7b-v3-3
+
+# Environment variables for vLLM (set in configmap):
+# https://docs.vllm.ai/en/latest/getting_started/gaudi-installation.html#environment-variables
+OMPI_MCA_btl_vader_single_copy_mechanism: ""
+PT_HPU_ENABLE_LAZY_COLLECTIVES: ""
+VLLM_CPU_KVCACHE_SPACE: ""
+
+# Performance tuning for DeepSeek R1
+# All following ENVs are controlled by the VLLM_PERFORMANCE_TUNED var
+# Set VLLM_PERFORMANCE_TUNED: false if you don't need these settings.
+VLLM_PERFORMANCE_TUNED: false
+PT_HPU_RECIPE_CACHE_CONFIG: ""
+VLLM_PROFILER_ENABLED: ""
+VLLM_PROFILE_FILE: ""
+VLLM_ZERO_PADDING: ""
+VLLM_PROMPT_USE_FUSEDSDPA: ""
+
+TOKENIZERS_PARALLELISM: ""
+PT_HPU_WEIGHT_SHARING: ""
+VLLM_MLA_DISABLE_REQUANTIZATION: ""
+RAY_IGNORE_UNHANDLED_ERRORS: ""
+VLLM_RAY_DISABLE_LOG_TO_DRIVER: ""
+VLLM_GRAPH_RESERVED_MEM: ""
+VLLM_GRAPH_PROMPT_RATIO: ""
+VLLM_EP_SIZE: ""
+VLLM_MOE_N_SLICE: ""
+
+VLLM_PROMPT_BS_BUCKET_MIN: ""
+VLLM_PROMPT_BS_BUCKET_STEP: ""
+VLLM_PROMPT_BS_BUCKET_MAX: ""
+VLLM_PROMPT_SEQ_BUCKET_MIN: ""
+VLLM_PROMPT_SEQ_BUCKET_STEP: ""
+VLLM_PROMPT_SEQ_BUCKET_MAX: ""
+VLLM_DECODE_BS_BUCKET_MIN: ""
+VLLM_DECODE_BS_BUCKET_STEP: ""
+VLLM_DECODE_BS_BUCKET_MAX: ""
+VLLM_DECODE_BLOCK_BUCKET_MIN: ""
+VLLM_DECODE_BLOCK_BUCKET_STEP: ""
+VLLM_DECODE_BLOCK_BUCKET_MAX: ""
+
+
+
+global:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  # service account name to be shared with all parent/child charts.
+  # If set, it will overwrite serviceAccount.name.
+  # If set, and serviceAccount.create is false, it will assume this service account is already created by others.
+  sharedSAName: ""
+
+  # Choose where to save your downloaded models
+  # Set modelUseHostPath for local directory, this is good for one node test. Example:
+  # modelUseHostPath: /mnt/opea-models
+  # Set modelUsePVC for PersistentVolumeClaim(PVC), which is suitable for multinode deployment. Example:
+  # modelUsePVC: model-volume
+  # You can only set one of the following var, the behavior is not defined is both are set.
+  # By default, both var are set to empty, the model will be downloaded and saved to a tmp volume.
+  modelUseHostPath: ""
+  modelUsePVC: ""
+
+  # Install Prometheus serviceMonitor for service
+  monitoring: false
+
+  # Prometheus Helm install release name for serviceMonitor
+  prometheusRelease: prometheus-stack

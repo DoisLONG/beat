@@ -1,0 +1,53 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: datafiles
+  namespace: staging
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: juicefs-sc
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: opea-models
+  namespace: staging
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: juicefs-sc
+  resources:
+    requests:
+      storage: 500Gi
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: ovms-embedding
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   storageClassName: juicefs-sc
+#   resources:
+#     requests:
+#       storage: 50Gi
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: ovms-rerank
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   storageClassName: juicefs-sc
+#   resources:
+#     requests:
+#       storage: 50Gi
+# 

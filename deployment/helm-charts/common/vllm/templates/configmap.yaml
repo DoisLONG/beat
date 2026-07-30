@@ -1,0 +1,71 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vllm.fullname" . }}-config
+  labels:
+    {{- include "vllm.labels" . | nindent 4 }}
+data:
+  HF_TOKEN: {{ .Values.global.HUGGINGFACEHUB_API_TOKEN | quote}}
+  {{- if .Values.global.HF_ENDPOINT }}
+  HF_ENDPOINT: {{ .Values.global.HF_ENDPOINT | quote}}
+  {{- end }}
+  http_proxy: {{ .Values.global.http_proxy | quote }}
+  https_proxy: {{ .Values.global.https_proxy | quote }}
+  no_proxy: {{ .Values.global.no_proxy | quote }}
+  {{- if contains "opea/vllm-gaudi" .Values.image.repository }}
+  HABANA_LOGS: "/tmp/habana_logs"
+  {{- end }}
+  NUMBA_CACHE_DIR: "/tmp"
+  HF_HOME: "/tmp/.cache/huggingface"
+  # https://github.com/outlines-dev/outlines/blob/main/outlines/caching.py#L14-L29
+  OUTLINES_CACHE_DIR: "/tmp/.cache/outlines"
+  {{- if .Values.VLLM_CPU_KVCACHE_SPACE }}
+  VLLM_CPU_KVCACHE_SPACE: {{ .Values.VLLM_CPU_KVCACHE_SPACE | quote}}
+  {{- end }}
+  {{- if .Values.VLLM_SKIP_WARMUP }}
+  VLLM_SKIP_WARMUP: {{ .Values.VLLM_SKIP_WARMUP | quote }}
+  {{- end }}
+  {{- if .Values.PT_HPU_ENABLE_LAZY_COLLECTIVES }}
+  PT_HPU_ENABLE_LAZY_COLLECTIVES: {{ .Values.PT_HPU_ENABLE_LAZY_COLLECTIVES | quote }}
+  {{- end }}
+  {{- if .Values.OMPI_MCA_btl_vader_single_copy_mechanism }}
+  OMPI_MCA_btl_vader_single_copy_mechanism: {{ .Values.OMPI_MCA_btl_vader_single_copy_mechanism | quote}}
+  {{- end }}
+  {{- if .Values.VLLM_TORCH_PROFILER_DIR }}
+  VLLM_TORCH_PROFILER_DIR: {{ .Values.VLLM_TORCH_PROFILER_DIR | quote }}
+  {{- end }}
+
+  # Add ENV for DeepSeek R1 version
+  {{- if .Values.VLLM_PERFORMANCE_TUNED }}
+  PT_HPU_RECIPE_CACHE_CONFIG: {{ .Values.PT_HPU_RECIPE_CACHE_CONFIG | quote }}
+  # VLLM_PROFILER_ENABLED: {{ .Values.VLLM_PROFILER_ENABLED | quote }}
+  # VLLM_PROFILE_FILE: {{ .Values.VLLM_PROFILE_FILE | quote }}
+  VLLM_ZERO_PADDING: {{ .Values.VLLM_ZERO_PADDING | quote }}
+  VLLM_PROMPT_USE_FUSEDSDPA: {{ .Values.VLLM_PROMPT_USE_FUSEDSDPA | quote }}
+
+  TOKENIZERS_PARALLELISM: {{ .Values.TOKENIZERS_PARALLELISM | quote }}
+  PT_HPU_WEIGHT_SHARING: {{ .Values.PT_HPU_WEIGHT_SHARING | quote }}
+  VLLM_MLA_DISABLE_REQUANTIZATION: {{ .Values.VLLM_MLA_DISABLE_REQUANTIZATION | quote }}
+  RAY_IGNORE_UNHANDLED_ERRORS: {{ .Values.RAY_IGNORE_UNHANDLED_ERRORS | quote }}
+  VLLM_RAY_DISABLE_LOG_TO_DRIVER: {{ .Values.VLLM_RAY_DISABLE_LOG_TO_DRIVER | quote }}
+  VLLM_GRAPH_RESERVED_MEM: {{ .Values.VLLM_GRAPH_RESERVED_MEM | quote }}
+  VLLM_GRAPH_PROMPT_RATIO: {{ .Values.VLLM_GRAPH_PROMPT_RATIO | quote }}
+  VLLM_EP_SIZE: {{ .Values.VLLM_EP_SIZE | quote }}
+  VLLM_MOE_N_SLICE: {{ .Values.VLLM_MOE_N_SLICE | quote }}
+
+  VLLM_PROMPT_BS_BUCKET_MIN: {{ .Values.VLLM_PROMPT_BS_BUCKET_MIN | quote }}
+  VLLM_PROMPT_BS_BUCKET_STEP: {{ .Values.VLLM_PROMPT_BS_BUCKET_STEP | quote }}
+  VLLM_PROMPT_BS_BUCKET_MAX: {{ .Values.VLLM_PROMPT_BS_BUCKET_MAX | quote }}
+  VLLM_PROMPT_SEQ_BUCKET_MIN: {{ .Values.VLLM_PROMPT_SEQ_BUCKET_MIN | quote }}
+  VLLM_PROMPT_SEQ_BUCKET_STEP: {{ .Values.VLLM_PROMPT_SEQ_BUCKET_STEP | quote }}
+  VLLM_PROMPT_SEQ_BUCKET_MAX: {{ .Values.VLLM_PROMPT_SEQ_BUCKET_MAX | quote }}
+  VLLM_DECODE_BS_BUCKET_MIN: {{ .Values.VLLM_DECODE_BS_BUCKET_MIN | quote }}
+  VLLM_DECODE_BS_BUCKET_STEP: {{ .Values.VLLM_DECODE_BS_BUCKET_STEP | quote }}
+  VLLM_DECODE_BS_BUCKET_MAX: {{ .Values.VLLM_DECODE_BS_BUCKET_MAX | quote }}
+  VLLM_DECODE_BLOCK_BUCKET_MIN: {{ .Values.VLLM_DECODE_BLOCK_BUCKET_MIN | quote }}
+  VLLM_DECODE_BLOCK_BUCKET_STEP: {{ .Values.VLLM_DECODE_BLOCK_BUCKET_STEP | quote }}
+  VLLM_DECODE_BLOCK_BUCKET_MAX: {{ .Values.VLLM_DECODE_BLOCK_BUCKET_MAX | quote }}
+  {{- end }}

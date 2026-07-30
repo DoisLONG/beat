@@ -1,0 +1,28 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  vllm-gpu-server:
+    image: vllm/vllm-openai:v0.7.3
+    container_name: vllm-GPU-server
+    ports:
+      - "18008:80"
+    volumes:
+      - "${DOCKER_VOLUME_DIRECTORY:-.}/models:/weights"
+    environment:
+      VLLM_SKIP_WARMUP: "True"
+      HF_HOME: /weights
+      no_proxy: ${no_proxy}
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+      HF_TOKEN: ${HUGGINGFACEHUB_API_TOKEN}
+      LLM_MODEL: ${LLM_MODEL}
+    runtime: nvidia
+    cap_add:
+      - SYS_NICE
+    ipc: host
+    command: --model ${LLM_MODEL} --trust-remote-code --dtype auto  --host 0.0.0.0 --port 80 --gpu-memory-utilization 0.95 --enable-chunked-prefill False --max-model-len 8192
+
+networks:
+  default:
+    driver: bridge

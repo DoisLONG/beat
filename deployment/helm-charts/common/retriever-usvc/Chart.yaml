@@ -1,0 +1,19 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+name: retriever-usvc
+description: The Helm chart for deploying retriever as microservice
+type: application
+version: 0-latest
+# The retriever microservice server version
+appVersion: "v1.0"
+dependencies:
+  - name: embedding
+    version: 0-latest
+    repository: file://../embedding
+    condition: embedding.enabled
+  - name: milvus
+    version: 4.2.12
+    repository: https://zilliztech.github.io/milvus-helm/
+    condition: milvus.enabled

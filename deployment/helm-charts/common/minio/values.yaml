@@ -1,0 +1,19 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# Refer to https://github.com/minio/minio/blob/master/helm/minio/values.yaml
+persistence:
+  existingClaim: datafiles
+rootUser: "kbadmin_minio"
+rootPassword: "kbadmin_minio"
+service:
+#  type: "NodePort"
+  port: "9100"
+consoleService:
+#  type: "NodePort"
+  port: "9101"
+mode: "standalone"
+replicas: 1
+resources:
+  requests:
+    memory: 2Gi

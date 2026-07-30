@@ -1,0 +1,80 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "llm-uservice.fullname" . }}-config
+  labels:
+    {{- include "llm-uservice.labels" . | nindent 4 }}
+data:
+  {{- if hasSuffix "llm-textgen" .Values.image.repository }}
+  {{- if eq "TGI" .Values.TEXTGEN_BACKEND }}
+  LLM_COMPONENT_NAME: "OpeaTextGenService"
+  {{- if not .Values.LLM_ENDPOINT }}
+  LLM_ENDPOINT: "http://{{ .Release.Name }}-tgi"
+  {{- end }}
+  {{- else if eq "vLLM" .Values.TEXTGEN_BACKEND }}
+  LLM_COMPONENT_NAME: "OpeaTextGenService"
+  {{- if not .Values.LLM_ENDPOINT }}
+  LLM_ENDPOINT: "http://{{ .Release.Name }}-vllm"
+  {{- end }}
+  {{- else }}
+  {{- cat "Invalid TEXTGEN_BACKEND:" .Values.TEXTGEN_BACKEND | fail }}
+  {{- end }}
+  {{- else if hasSuffix "llm-docsum" .Values.image.repository }}
+  MAX_INPUT_TOKENS: {{ .Values.MAX_INPUT_TOKENS | default "" | quote }}
+  MAX_TOTAL_TOKENS: {{ .Values.MAX_TOTAL_TOKENS | default "" | quote }}
+  {{- if eq "TGI" .Values.DOCSUM_BACKEND }}
+  DocSum_COMPONENT_NAME: "OpeaDocSumTgi"
+  {{- if not .Values.LLM_ENDPOINT }}
+  LLM_ENDPOINT: "http://{{ .Release.Name }}-tgi"
+  {{- end }}
+  {{- else if eq "vLLM" .Values.DOCSUM_BACKEND }}
+  DocSum_COMPONENT_NAME: "OpeaDocSumvLLM"
+  {{- if not .Values.LLM_ENDPOINT }}
+  LLM_ENDPOINT: "http://{{ .Release.Name }}-vllm"
+  {{- end }}
+  {{- else }}
+  {{- cat "Invalid DOCUSM_BACKEND:" .Values.DOCSUM_BACKEND | fail }}
+  {{- end }}
+  {{- else if hasSuffix "llm-faqgen" .Values.image.repository }}
+  {{- if eq "TGI" .Values.FAQGEN_BACKEND }}
+  FAQGen_COMPONENT_NAME: "OpeaFaqGenTgi"
+  {{- if not .Values.LLM_ENDPOINT }}
+  LLM_ENDPOINT: "http://{{ .Release.Name }}-tgi"
+  {{- end }}
+  {{- else if eq "vLLM" .Values.FAQGEN_BACKEND }}
+  FAQGen_COMPONENT_NAME: "OpeaFaqGenvLLM"
+  {{- if not .Values.LLM_ENDPOINT }}
+  LLM_ENDPOINT: "http://{{ .Release.Name }}-vllm"
+  {{- end }}
+  {{- else }}
+  {{- cat "Invalid FAQGEN_BACKEND:" .Values.FAQGEN_BACKEND | fail }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.LLM_ENDPOINT }}
+  LLM_ENDPOINT: {{ tpl .Values.LLM_ENDPOINT . | quote }}
+  vLLM_ENDPOINT: {{ tpl .Values.LLM_ENDPOINT . | quote }}
+  {{- end }}
+  {{- if .Values.LLM_MODEL_ID }}
+  LLM_MODEL_ID: {{ .Values.LLM_MODEL_ID | quote }}
+  LLM_MODEL: {{ .Values.LLM_MODEL_ID | quote }}
+  {{- end }}
+  {{- if .Values.OPENAI_API_KEY }}
+  OPENAI_API_KEY: {{ .Values.OPENAI_API_KEY | quote }}
+  {{- end }}
+  HF_HOME: "/tmp/.cache/huggingface"
+  HF_TOKEN: {{ .Values.global.HUGGINGFACEHUB_API_TOKEN | quote }}
+  {{- if .Values.global.HF_ENDPOINT }}
+  HF_ENDPOINT: {{ .Values.global.HF_ENDPOINT | quote }}
+  {{- end }}
+  http_proxy: {{ .Values.global.http_proxy | quote }}
+  https_proxy: {{ .Values.global.https_proxy | quote }}
+  {{- if or .Values.global.http_proxy .Values.global.https_proxy }}
+  no_proxy: "{{ .Release.Name }}-tgi,{{ .Release.Name }}-vllm,{{ .Values.global.no_proxy }}"
+  {{- else }}
+  no_proxy: {{ .Values.global.no_proxy | quote }}
+  {{- end }}
+  LOG_LEVEL: {{ .Values.LOG_LEVEL | quote }}
+  FILTER_QUERIES: {{ .Values.FILTER_QUERIES | quote }}

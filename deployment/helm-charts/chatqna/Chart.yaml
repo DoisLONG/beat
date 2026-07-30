@@ -1,0 +1,67 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+name: chatqna
+description: The Helm chart to deploy ChatQnA
+type: application
+dependencies:
+  - name: vllm
+    version: 0-latest
+    repository: "file://../common/vllm"
+    condition: vllm.enabled
+  - name: embedding
+    version: 0-latest
+    repository: "file://../common/embedding"
+    condition: embedding.enabled
+  - name: reranking
+    version: 0-latest
+    repository: "file://../common/reranking"
+    condition: reranking.enabled
+  - name: llm-uservice
+    version: 0-latest
+    repository: "file://../common/llm-uservice"
+    condition: llm-uservice.enabled
+  - name: embedding-usvc
+    version: 0-latest
+    repository: "file://../common/embedding-usvc"
+    condition: embedding-usvc.enabled
+  - name: reranking-usvc
+    version: 0-latest
+    repository: "file://../common/reranking-usvc"
+    condition: reranking-usvc.enabled
+  - name: retriever-usvc
+    version: 0-latest
+    repository: "file://../common/retriever-usvc"
+    condition: retriever-usvc.enabled
+  - name: chathistory-usvc
+    version: 0-latest
+    repository: "file://../common/chathistory-usvc"
+    condition: chathistory-usvc.enabled
+  - name: data-prep
+    version: 0-latest
+    repository: "file://../common/data-prep"
+    condition: data-prep.enabled
+  - name: ui
+    alias: chatqna-ui
+    version: 0-latest
+    repository: "file://../common/ui"
+    condition: chatqna-ui.enabled
+  - name: milvus
+    version: 4.2.12
+    repository: https://zilliztech.github.io/milvus-helm/
+    condition: milvus.enabled
+  - name: mongodb
+    version: 0-latest
+    repository: "file://../common/mongodb"
+    condition: mongodb.enabled
+  - name: mysql
+    version: 0-latest
+    repository: "file://../common/mysql"
+    condition: mysql.enabled
+  - name: redis-db 
+    version: 0-latest
+    repository: "file://../common/redis-db"
+    condition: redis-db.enabled
+version: 0-latest
+appVersion: "v1.0"

@@ -9,7 +9,6 @@
 bazel-*
 compile_commands.json
 .gitconfig
-deployment
 
 
 # runtime

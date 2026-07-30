@@ -1,0 +1,32 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+services:
+  hf-tei-embedding:
+    container_name: hf-tei-embedding-serving
+    image: ${REGISTRY:-localhost:5000}/ekba/backends/hf-tei-embedding:cpu-1.6-BAAI--bge-large-zh-v1.5
+    restart: unless-stopped
+
+    networks:
+      - eap-network
+    ports:
+      - ${TEI_EMBEDDING_PORT:-13020}:80
+
+    environment:
+      HF_HUB_DISABLE_PROGRESS_BARS: 1
+      HF_HUB_ENABLE_HF_TRANSFER: 0
+
+  hf-tei-reranker:
+    container_name: hf-tei-reranker-serving
+    image: ${REGISTRY:-localhost:5000}/ekba/backends/hf-tei-reranker:cpu-1.6-BAAI--bge-reranker-base
+    restart: unless-stopped
+
+    networks:
+      - eap-network
+    ports:
+      - ${TEI_RERANKING_PORT:-13010}:80
+
+networks:
+  eap-network:
+    external: true

@@ -1,0 +1,132 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatqna.fullname" . }}
+  labels:
+    {{- include "chatqna.labels" . | nindent 4 }}
+    app: {{ include "chatqna.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "chatqna.selectorLabels" . | nindent 6 }}
+      app: {{ include "chatqna.fullname" . }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "chatqna.selectorLabels" . | nindent 8 }}
+        app: {{ include "chatqna.fullname" . }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "chatqna.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Release.Name }}
+          env:
+            - name: RETRIEVER_SERVICE_HOST_IP
+              {{- if .Values.RETRIEVER_SERVICE_HOST_IP }}
+              value: {{ .Values.RETRIEVER_SERVICE_HOST_IP }}
+              {{- else }}
+              value: {{ .Release.Name }}-retriever-usvc
+              {{- end }}
+            - name: RETRIEVER_SERVICE_PORT
+              {{- if .Values.RETRIEVER_SERVICE_PORT }}
+              value: {{ .Values.RETRIEVER_SERVICE_PORT }}
+              {{- else }}
+              value: "7000"
+              {{- end }}
+            - name: LLM_SERVICE_HOST_IP
+              {{- if .Values.LLM_SERVICE_HOST_IP }}
+              value: {{ .Values.LLM_SERVICE_HOST_IP }}
+              {{- else }}
+              value: {{ .Release.Name }}-llm-uservice
+              {{- end }}
+            - name: LLM_SERVICE_PORT
+              {{- if .Values.LLM_SERVICE_PORT }}
+              value: {{ .Values.LLM_SERVICE_PORT }}
+              {{- else }}
+              value: "9000"
+              {{- end }}
+            - name: RERANK_SERVICE_HOST_IP
+              {{- if .Values.RERANK_SERVICE_HOST_IP }}
+              value: {{ .Values.RERANK_SERVICE_HOST_IP }}
+              {{- else }}
+              value: {{ .Release.Name }}-reranking-usvc
+              {{- end }}
+            - name: RERANK_SERVICE_PORT
+              {{- if .Values.RERANK_SERVICE_PORT }}
+              value: {{ .Values.RERANK_SERVICE_PORT }}
+              {{- else }}
+              value: "8000"
+              {{- end }}
+            - name: EMBEDDING_SERVICE_HOST_IP
+              {{- if .Values.EMBEDDING_SERVICE_HOST_IP }}
+              value: {{ .Values.EMBEDDING_SERVICE_HOST_IP }}
+              {{- else }}
+              value: {{ .Release.Name }}-embedding-usvc
+              {{- end }}
+            - name: EMBEDDING_SERVICE_PORT
+              {{- if .Values.EMBEDDING_SERVICE_PORT }}
+              value: {{ .Values.EMBEDDING_SERVICE_PORT }}
+              {{- else }}
+              value: "6000"
+              {{- end }}
+            {{- if .Values.ENABLE_RERANK }}
+            - name: ENABLE_RERANK
+              value: {{ .Values.ENABLE_RERANK | quote }}
+            {{- end }}
+            {{- if .Values.LOG_LEVEL }}
+            - name: LOG_LEVEL
+              value: {{ .Values.LOG_LEVEL | quote }}
+            {{- end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.global.REGISTRY }}{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp
+          ports:
+            - name: chatqna
+              containerPort: {{ .Values.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.evenly_distributed }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              {{- include "chatqna.selectorLabels" . | nindent 14 }}
+              app: {{ include "chatqna.fullname" . }}
+      {{- end }}

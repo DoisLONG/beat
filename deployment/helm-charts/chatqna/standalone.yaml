@@ -1,0 +1,13 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+global:
+  REGISTRY: gar-registry.caas.intel.com/
+image:
+  tag: v2.0b
+EMBEDDING_SERVICE_HOST_IP: embedding-usvc
+RETRIEVER_SERVICE_HOST_IP: retriever-retriever-usvc
+RERANK_SERVICE_HOST_IP: reranking-usvc
+LLM_SERVICE_HOST_IP: llm-llm-uservice
+ENABLE_RERANK: true
+LOG_LEVEL: DEBUG

@@ -1,0 +1,9 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+name: mysql
+description: The Helm chart for mysql DB
+type: application
+version: 0-latest
+appVersion: "8.0.39"

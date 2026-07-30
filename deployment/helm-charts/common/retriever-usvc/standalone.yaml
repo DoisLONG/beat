@@ -1,0 +1,12 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+global:
+  REGISTRY: gar-registry.caas.intel.com/
+  HF_ENDPOINT: https://hf-mirror.com
+  HF_HUB_OFFLINE: 1
+image:
+  tag: v2.0b
+OVMS_EMBEDDING_ENDPOINT: http://embedding/v3
+MILVUS_HOST: milvus
+LOG_LEVEL: DEBUG

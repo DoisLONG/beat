@@ -1,0 +1,22 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ui.fullname" . }}-config
+  labels:
+    {{- include "ui.labels" . | nindent 4 }}
+data:
+  APP_BACKEND_ENDPOINT: {{ tpl .Values.APP_BACKEND_ENDPOINT . | quote }}
+  APP_DATAPREP_ENDPOINT: {{ tpl .Values.APP_DATAPREP_ENDPOINT . | quote }}
+  APP_CHATHISTORY_ENDPOINT: {{ tpl .Values.APP_CHATHISTORY_ENDPOINT . | quote }}
+  APP_LLM_ENDPOINT: {{ tpl .Values.APP_LLM_ENDPOINT . | quote }}
+  APP_KBS_ENDPOINT: {{ tpl .Values.APP_KBS_ENDPOINT . | quote }}
+  APP_DOWNLOAD_SERVER: {{ tpl .Values.APP_DOWNLOAD_SERVER . | quote }}
+
+# APP_BACKEND_ENDPOINT="http://${host_ip}:8888"
+# APP_DATAPREP_ENDPOINT="http://${host_ip}:6007"
+# APP_CHATHISTORY_ENDPOINT="http://${host_ip}:8012"
+# APP_LLM_ENDPOINT="http://${host_ip}:9000"
+# APP_DOWNLOAD_SERVER="http://${host_ip}:9001"

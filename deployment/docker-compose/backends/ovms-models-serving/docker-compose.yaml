@@ -1,0 +1,30 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+services:
+  ovms-embedding:
+    container_name: ovms-embedding-serving
+    image: ${REGISTRY:-localhost:5000}/ekba/backends/ovms-embedding:2025.0-BAAI--bge-large-zh-v1.5
+    restart: unless-stopped
+
+    networks:
+      - eap-network
+    ports:
+      - ${OVMS_EMBEDDING_PORT:-13020}:8000
+      #- "4020:9000"
+
+  ovms-reranking:
+    container_name: ovms-reranking-serving
+    image: ${REGISTRY:-localhost:5000}/ekba/backends/ovms-reranking:2024.5-BAAI--bge-reranker-large
+    restart: unless-stopped
+
+    networks:
+      - eap-network
+    ports:
+      - ${OVMS_RERANKING_PORT:-13010}:8000
+      #- "4010:9000"
+
+networks:
+  eap-network:
+    external: true

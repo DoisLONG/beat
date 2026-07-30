@@ -1,0 +1,31 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  vllm-gaudi-server:
+    image: ${REGISTRY:-localhost:5000}/ekba/illm/deepseek-ai/deepseek-r1-distrill-qwen-32b:vllm-0.6.4-hpu
+    container_name: vllm-gaudi-server
+    ports:
+      - "18008:80"
+    volumes:
+      - "./models:/weights"
+    environment:
+      HF_ENDPOINT: ${HF_ENDPOINT}
+      HUGGINGFACE_HUB_CACHE: /weights
+      no_proxy: ${no_proxy}
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+      HF_TOKEN: ${HUGGINGFACEHUB_API_TOKEN}
+      HABANA_VISIBLE_DEVICES: all
+      OMPI_MCA_btl_vader_single_copy_mechanism: none
+      LLM_MODEL: ${LLM_MODEL}
+      N_HPU: 4
+    runtime: habana
+    cap_add:
+      - SYS_NICE
+    ipc: host
+    command: -w $LLM_MODEL -n 4 -t 65536 -l 32768 -u 0.0.0.0 -p 80 -s
+
+networks:
+  default:
+    driver: bridge

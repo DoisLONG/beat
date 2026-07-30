@@ -1,0 +1,102 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+image:
+  tag: v2.0b-ww18
+
+#EMBEDDING_SERVICE_HOST_IP: embedding-usvc
+#RETRIEVER_SERVICE_HOST_IP: retriever-retriever-usvc
+#RERANK_SERVICE_HOST_IP: reranking-usvc
+#LLM_SERVICE_HOST_IP: llm-llm-uservice
+LOG_LEVEL: DEBUG
+
+# Optional subcharts enablement and subcharts settings overwritten
+vllm:
+  enabled: false
+  LLM_MODEL_ID: meta-llama/Meta-Llama-3-8B-Instruct
+  shmSize: 128Gi
+  VLLM_TORCH_PROFILER_DIR: "/tmp/vllm_profile"
+data-prep:
+  enabled: false
+  DATAPREP_BACKEND: "MILVUS"
+embedding:
+  enabled: true
+reranking:
+  enabled: true
+llm-uservice:
+  enabled: true
+  image:
+    tag: v2.0b-ww18
+  LLM_ENDPOINT: http://10.239.75.254:30088
+  LLM_MODEL_ID: "/weights/DeepSeek-R1-Distill-Qwen-32B"
+
+embedding-usvc:
+  enabled: true
+  image:
+    tag: v2.0b-ww18
+reranking-usvc:
+  enabled: true
+  image:
+    tag: v2.0b-ww18
+retriever-usvc:
+  enabled: true
+  image:
+    tag: v2.0b-ww18
+chathistory-usvc:
+  enabled: true
+  image:
+    tag: v2.0b-ww18
+chatqna-ui:
+  enabled: true
+  image:
+    tag: v2.0b-ww18
+  containerPort: "80"
+  service:
+    type: NodePort
+    nodePort: 32589
+  APP_BACKEND_ENDPOINT: "http://{{ .Release.Name }}-chatqna:8888"
+  APP_CHATHISTORY_ENDPOINT: "http://{{ .Release.Name }}-chathistory-usvc:6012"
+  APP_LLM_ENDPOINT: "http://{{ .Release.Name }}-llm-uservice:9000"
+  APP_KBS_ENDPOINT: "http://{{ .Release.Name }}-retriever-usvc:7000"
+  APP_DOWNLOAD_SERVER: "http://{{ .Release.Name }}-minio:9000"
+
+milvus:
+  enabled: true
+  cluster:
+    enabled: false
+  etcd:
+    replicaCount: 1
+  pulsar:
+    enabled: false
+  minio:
+    mode: standalone
+mongodb:
+  enabled: true
+mysql:
+  enabled: true
+redis-db:
+  enabled: true
+kbminio:
+  enabled: true
+
+# Uncomment the following lines
+global:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+  REGISTRY: gar-registry.caas.intel.com/
+  HF_ENDPOINT: https://hf-mirror.com
+  HF_HUB_OFFLINE: 1
+
+  # Experimental REGISTRY, used as prefix to repository image
+  # Only chatquan-ui enabled for now
+  # REGISTRY: "localhost:5000/"
+  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  # service account name to be shared with all parent/child charts.
+  # If set, it will overwrite serviceAccount.name.
+  # If set, and serviceAccount.create is false, it will assume this service account is already created by others.
+  sharedSAName: "chatqna"
+  # set modelUseHostPath or modelUsePVC to use model cache.
+  modelUseHostPath: ""
+  # modelUseHostPath: /mnt/opea-models
+  # modelUsePVC: model-volume

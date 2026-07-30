@@ -1,0 +1,9 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+global:
+  REGISTRY: gar-registry.caas.intel.com/
+image:
+  tag: v2.0b
+LLM_ENDPOINT: http://10.239.75.254:30088
+LLM_MODEL_ID: "/weights/DeepSeek-R1-Distill-Qwen-32B"

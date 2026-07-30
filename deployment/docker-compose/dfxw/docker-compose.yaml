@@ -1,0 +1,315 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# shared environment variables to be applied INSIDE containers
+# while .env file is used to set the variables OUTSIDE containers
+x-shared-env: &shared-envs
+  MILVUS_HOST: ${MILVUS_HOST:-milvus-standalone}
+  MILVUS_PORT: ${MILVUS_PORT:-19530}
+  COLLECTION_NAME: ${COLLECTION_NAME:-rag_milvus}
+
+  HF_ENDPOINT: ${HF_ENDPOINT:-https://hf-mirror.com}
+  HUGGINGFACEHUB_API_TOKEN: ${HUGGINGFACEHUB_API_TOKEN}
+  HF_HUB_OFFLINE: 0
+  HUGGINGFACE_HUB_CACHE: "/home/user/.cache/huggingface/hub/"
+  HF_HUB_DISABLE_PROGRESS_BARS: 1
+  HF_HUB_ENABLE_HF_TRANSFER: 0
+
+  EMBEDDING_RERANKER_BACKEND: ${EMBEDDING_RERANKER_BACKEND}
+
+  OVMS_EMBEDDING_ENDPOINT: ${OVMS_EMBEDDING_ENDPOINT}
+  OVMS_EMBEDDING_MODEL: ${OVMS_EMBEDDING_MODEL}
+  embedding_ctx_length: ${embedding_ctx_length}
+  OVMS_RERANKING_ENDPOINT: ${OVMS_RERANKING_ENDPOINT}
+  OVMS_RERANKING_MODEL: ${OVMS_RERANKING_MODEL}
+
+  TEI_EMBEDDING_ENDPOINT: ${TEI_EMBEDDING_ENDPOINT}
+  TEI_RERANKING_ENDPOINT: ${TEI_RERANKING_ENDPOINT}
+  LOCAL_EMBEDDING_MODEL: ${LOCAL_EMBEDDING_MODEL:-maidalun1020/bce-embedding-base_v1}
+  MOSEC_EMBEDDING_ENDPOINT: ${MOSEC_EMBEDDING_ENDPOINT}
+  MOSEC_EMBEDDING_MODEL: ${MOSEC_EMBEDDING_MODEL:-/home/user/bge-large-zh-v1.5}
+
+  OUTSTANDING_SCORE: ${OUTSTANDING_SCORE}
+
+  TOTAL_ROUNDS: ${TOTAL_ROUNDS:-10}
+  MAX_SUPPLEMENT_ROUNDS: ${MAX_SUPPLEMENT_ROUNDS:-3}
+  DATAPREP_QA_CONCURRENCY_LIMIT: ${DATAPREP_QA_CONCURRENCY_LIMIT:-3}
+
+  BAILIAN_EMBEDDING_ENDPOINT: ${BAILIAN_EMBEDDING_ENDPOINT}
+  BAILIAN_EMBEDDING_MODEL: ${BAILIAN_EMBEDDING_MODEL}
+  BAILIAN_EMBEDDING_API_KEY: ${BAILIAN_EMBEDDING_API_KEY}
+  ASR_TRANSPORT: ${ASR_TRANSPORT:-http}
+  ASR_RUNTIME_OPTIONS_JSON: ${ASR_RUNTIME_OPTIONS_JSON}
+  ASR_ENDPOINT: ${ASR_ENDPOINT}
+  ASR_MODEL: ${ASR_MODEL}
+  ASR_API_KEY: ${ASR_API_KEY}
+  ASR_PROVIDER: ${ASR_PROVIDER}
+  DATAPREP_LLM_PROVIDER: ${DATAPREP_LLM_PROVIDER}
+  DATAPREP_LLM_ENDPOINT: ${DATAPREP_LLM_ENDPOINT}
+  DATAPREP_LLM_MODEL: ${DATAPREP_LLM_MODEL}
+  ASR_LLM_MODEL: ${ASR_LLM_MODEL}
+  DATAPREP_LLM_API_KEY: ${DATAPREP_LLM_API_KEY}
+  SMART_PRACTICE_LLM_PROVIDER: ${SMART_PRACTICE_LLM_PROVIDER}
+  SMART_PRACTICE_LLM_ENDPOINT: ${SMART_PRACTICE_LLM_ENDPOINT}
+  SMART_PRACTICE_LLM_MODEL: ${SMART_PRACTICE_LLM_MODEL}
+  SMART_PRACTICE_LLM_API_KEY: ${SMART_PRACTICE_LLM_API_KEY}
+  REDIS_HOST : ${REDIS_HOST:-redis}
+  REDIS_PORT : ${REDIS_PORT:-6379}
+  REDIS_DB: ${REDIS_DB:-0}
+  REDIS_PASSWORD:  ${REDIS_PASSWORD:-Eap@dfxw2025}
+  SESSION_REDIS_PREFIX: ${SESSION_REDIS_PREFIX:-exam:session:}
+  TIME_REDIS_PREFIX: ${TIME_REDIS_PREFIX:-exam:global_timer:}
+  MODEL_CONFIG_ENCRYPTION_KEYS: ${MODEL_CONFIG_ENCRYPTION_KEYS:-fd90Zn9EmvWbHtAyjP9bApzes-DtPcvHOXyAs-_QPjU=}
+  MODEL_CONFIG_ASR_PROBE_AUDIO_PATH: ${MODEL_CONFIG_ASR_PROBE_AUDIO_PATH:-}
+  DATA_LOADER_TYPE: ${DATA_LOADER_TYPE:-local}
+  FILES_STORED_TYPE: ${FILES_STORED_TYPE:-minio}
+  PROMPT_LANGUAGE: ${PROMPT_LANGUAGE:-zh}
+  MAGIC_PDF_REMOTE_ENABLED: ${MAGIC_PDF_REMOTE_ENABLED:-true}
+  MAGIC_PDF_PARSE_URL: ${MAGIC_PDF_PARSE_URL:-http://183.95.195.121:31439/magic-pdf/parse}
+  MAGIC_PDF_PARSE_METHOD: ${MAGIC_PDF_PARSE_METHOD:-auto}
+  MAGIC_PDF_PARSE_LANG: ${MAGIC_PDF_PARSE_LANG:-ch_server}
+  MAGIC_PDF_PARSE_CONNECT_TIMEOUT: ${MAGIC_PDF_PARSE_CONNECT_TIMEOUT:-10}
+  MAGIC_PDF_PARSE_READ_TIMEOUT: ${MAGIC_PDF_PARSE_READ_TIMEOUT:-600}
+  MAGIC_PDF_PARSE_RETRIES: ${MAGIC_PDF_PARSE_RETRIES:-2}
+  MAGIC_PDF_PARSE_RETRY_BACKOFF_SECONDS: ${MAGIC_PDF_PARSE_RETRY_BACKOFF_SECONDS:-1.5}
+  TOP_PUSH_URL: ${TOP_PUSH_URL:-http://dashboard:6020/api/dashboard/leaderboard/recalculate}
+
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+services:
+  account:
+    container_name: eap-account
+    image: ${REGISTRY:-localhost:5000}/ekba/account:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - 9011:9011
+    environment:
+      <<: *shared-envs
+      MYSQL_HOST : ${MYSQL_HOST:-mysql}
+      MYSQL_PORT : ${MYSQL_PORT:-13306}
+      MYSQL_USER : ${MYSQL_USER:-root}
+      MYSQL_PASSWORD : ${MYSQL_PASSWORD:-Eap@dfxw2025}
+      MYSQL_DB : ${MYSQL_DB:-ekba_kb}
+      SECRET_KEY : ${ACCOUNT_SECRET_KEY:-your_secret_key}
+      JWT_ALGORITHM : ${JWT_ALGORITHM:-HS256}
+      JWT_EXPIRATION_DELTA : ${JWT_EXPIRATION_DELTA:-86400}
+      PASSING_SCORE: ${PASSING_SCORE:-60}
+
+  chathistory:
+    container_name: eap-chathistory
+    image: ${REGISTRY:-localhost:5000}/ekba/chathistory:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - 6022:6022
+    environment:
+      MONGO_HOST: ${MONGO_HOST:-mongodb}
+      MONGO_PORT: ${MONGO_PORT:-27017}
+      MONGO_DB_NAME: ${MONGO_DB_NAME:-OPEA.EAP}
+      MONGO_COLLECTION_NAME: ${MONGO_COLLECTION_NAME:-ChatHistory}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+  ui:
+    container_name: ekba-ui
+    image: ${REGISTRY:-localhost:5000}/ekba/ui:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - ${EKBA_UI_PORT}:80
+    environment:
+      - SOP_API_HOST=${SOP_API_HOST:-dataprep:6010}
+      - CHAT_API_HOST=${CHAT_API_HOST:-smart-practice-usvc:9010}
+      - COMPANY_API_HOST=${COMPANY_API_HOST:-system-common:8010}
+      - CHAT_HISTORY_API_HOST=${CHAT_HISTORY_API_HOST:-chathistory:6022}
+      - USER_API_HOST=${USER_API_HOST:-account:9011}
+      - MOBILE_API_HOST=${LEARN_API_HOST:-learn:7010}
+      - VIDEO_API_HOST=${VIDEO_API_HOST:-video:8000}
+      - VIDEO_API_HOST_V2=${VIDEO_API_HOST_V2:-excel:8001}
+      - DASHBOARD_API_HOST=${DASHBOARD_API_HOST:-dashboard:6020}
+    volumes:
+      - ${PWD}/nginx-ssl:/etc/nginx/ssl:ro
+
+  video:
+    container_name: eap-video
+    image: ${REGISTRY:-localhost:5000}/ekba/asr:${TAG:-latest}
+    restart: unless-stopped
+    user: "0:0"
+    networks:
+      - eap-network
+    ports:
+      - 8000:8000
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/video_data:/home/user/comps/asr/data
+    environment:
+      <<: *shared-envs
+      ASR_DATA_DIR: /home/user/comps/asr/data
+      ASR_ENGINE: ${ASR_ENGINE:-qwen}
+      ASR_MAX_WORKERS: ${ASR_MAX_WORKERS:-2}
+      ASR_CHUNK_WORKERS: ${ASR_CHUNK_WORKERS:-4}
+      ASR_FFMPEG_SEGMENT_SECONDS: ${ASR_FFMPEG_SEGMENT_SECONDS:-300}
+      ASR_SSL_VERIFY: ${ASR_SSL_VERIFY:-false}
+      ASR_REFINE_BATCH_SIZE: ${ASR_REFINE_BATCH_SIZE:-10}
+      REFINE_BATCH_WORKERS: ${REFINE_BATCH_WORKERS:-3}
+      ASR_WHISPER_MODEL_SIZE: ${ASR_WHISPER_MODEL_SIZE:-medium}
+      ASR_WHISPER_DEVICE: ${ASR_WHISPER_DEVICE:-auto}
+      ASR_WHISPER_COMPUTE_TYPE: ${ASR_WHISPER_COMPUTE_TYPE:-default}
+      ASR_WHISPER_MODEL_PATH: ${ASR_WHISPER_MODEL_PATH:-/opt/models/faster-whisper-medium}
+
+  excel:
+    container_name: eap-excel
+    image: ${REGISTRY:-localhost:5000}/ekba/excel:${TAG:-latest}
+    restart: unless-stopped
+    user: "0:0"
+    networks:
+      - eap-network
+    ports:
+      - 8001:8001
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/excel_data:/home/user/comps/excel/data
+    environment:
+      <<: *shared-envs
+      EXCEL_DATA_DIR: /home/user/comps/excel/data
+      EXCEL_ASR_BASE_URL: ${EXCEL_ASR_BASE_URL:-http://video:8000}
+      SOP_UPLOAD_URL: ${SOP_UPLOAD_URL:-http://dataprep:6010/v1/dataprep/generate_qa}
+      SOP_UPLOAD_FILE_FIELD: ${SOP_UPLOAD_FILE_FIELD:-files}
+      SOP_UPLOAD_FILE_TYPE: ${SOP_UPLOAD_FILE_TYPE:-sop}
+      SOP_UPLOAD_AUTH_HEADER: ${SOP_UPLOAD_AUTH_HEADER:-}
+      SOP_UPLOAD_ENABLED: ${SOP_UPLOAD_ENABLED:-true}
+      EXCEL_EXECUTOR_WORKERS: ${EXCEL_EXECUTOR_WORKERS:-2}
+
+  smart-practice-usvc:
+    container_name: eap-smart-practice
+    image:  ${REGISTRY:-localhost:5000}/ekba/smart-practice:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - 9010:9010
+    environment:
+      <<: *shared-envs
+      MONGO_HOST: ${MONGO_HOST:-mongodb}
+      MONGO_PORT: ${MONGO_PORT:-27017}
+      MONGO_DB_NAME: ${MONGO_DB_NAME:-OPEA.EAP}
+      USER_LOGS_COLLECTION_NAME: ${USER_LOGS_COLLECTION_NAME:-UserLogs}
+      TIME_LIMIT: ${TIME_LIMIT:-600}
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-13306}
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-Eap@dfxw2025}
+      MYSQL_DB: ${MYSQL_DB:-ekba_kb}
+      DFXW_BASE_URL: ${DFXW_BASE_URL:-}
+      DFXW_TOKEN_URL: ${DFXW_TOKEN_URL:-}
+      DFXW_CLIENT_ID: ${DFXW_CLIENT_ID:-}
+      DFXW_CLIENT_SECRET: ${DFXW_CLIENT_SECRET:-}
+
+
+  dataprep:
+    container_name: eap-legacy-dataprep
+    image: ${REGISTRY:-localhost:5000}/ekba/dataprep:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - ${EKBA_DATAPREP_PORT}:6010
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/upload_files:/home/user/comps/dataprep/uploaded_files
+      - ${MAGIC_PDF_MODEL_PATH:-/root/.cache/modelscope/hub/models}:/home/user/models
+    environment:
+      <<: *shared-envs
+      MYSQL_HOST : ${MYSQL_HOST:-mysql}
+      MYSQL_PORT : ${MYSQL_PORT:-13306}
+      MYSQL_USER : ${MYSQL_USER:-root}
+      MYSQL_PASSWORD : ${MYSQL_PASSWORD:-Eap@dfxw2025}
+      MYSQL_DB : ${MYSQL_DB:-ekba_kb}
+      ALIYUN_ACCESS_KEY_ID : ${ALIYUN_ACCESS_KEY_ID}
+      ALIYUN_ACCESS_KEY_SECRET : ${ALIYUN_ACCESS_KEY_SECRET}
+      OSS_ENDPOINT : ${OSS_ENDPOINT:-https://oss-cn-shanghai.aliyuncs.com}
+      OSS_BUCKET_NAME : ${OSS_BUCKET_NAME:-eh-shanghai-ai}
+      OSS_DEST_PREFIX : ${OSS_DEST_PREFIX:-ai-doc}
+      MINIO_ENDPOINT : ${MINIO_ENDPOINT:-minio:9000}
+      MINIO_ACCESS_KEY : ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY : ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_SECURE : ${MINIO_SECURE:-false}
+      MINIO_BUCKET_NAME : ${MINIO_BUCKET_NAME:-eap}
+      MINIO_PREFIX : ${MINIO_PREFIX:-ai-doc}
+
+  system-common:
+    container_name: eap-system-common
+    image: ${REGISTRY:-localhost:5000}/ekba/system-common:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - 8010:8010
+    environment:
+      <<: *shared-envs
+      MYSQL_HOST : ${MYSQL_HOST:-mysql}
+      MYSQL_PORT : ${MYSQL_PORT:-13306}
+      MYSQL_USER : ${MYSQL_USER:-root}
+      MYSQL_PASSWORD : ${MYSQL_PASSWORD:-Eap@dfxw2025}
+      MYSQL_DB : ${MYSQL_DB:-ekba_kb}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_SECURE: ${MINIO_SECURE:-false}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-eap}
+      MINIO_PREFIX: ${MINIO_PREFIX:-ai-doc}
+
+  learn:
+    container_name: eap-learn
+    image: ${REGISTRY:-localhost:5000}/ekba/learn:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - 7010:7010
+    environment:
+      <<: *shared-envs
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-13306}
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-Eap@dfxw2025}
+      MYSQL_DB: ${MYSQL_DB:-ekba_kb}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_SECURE: ${MINIO_SECURE:-false}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-eap}
+      MINIO_PREFIX: ${MINIO_PREFIX:-ai-doc}
+
+  dashboard:
+    container_name: eap-dashboard
+    image: ${REGISTRY:-localhost:5000}/ekba/dashboard:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - eap-network
+    ports:
+      - 6020:6020
+    environment:
+      <<: *shared-envs
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-13306}
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-Eap@dfxw2025}
+      MYSQL_DB: ${MYSQL_DB:-ekba_kb}
+      ACTIVE_USER_DAYS: ${ACTIVE_USER_DAYS:-7}
+      ACTIVE_USER_MIN_SECONDS: ${ACTIVE_USER_MIN_SECONDS:-1800}
+      EXAM_PASS_SCORE: ${EXAM_PASS_SCORE:-60.0}
+      SESSION_TIMEOUT: ${SESSION_TIMEOUT:-3600}
+      ENABLE_CACHE: ${ENABLE_CACHE:-false}
+      CACHE_TTL: ${CACHE_TTL:-300}
+      SQL_ECHO: ${SQL_ECHO:-false}
+      CRON_DAILY_HOUR: ${CRON_DAILY_HOUR:-0}
+      CRON_DAILY_MINUTE: ${CRON_DAILY_MINUTE:-5}
+      CRON_WEEKLY_DAY_OF_WEEK: ${CRON_WEEKLY_DAY_OF_WEEK:-mon}
+      CRON_WEEKLY_HOUR: ${CRON_WEEKLY_HOUR:-0}
+      CRON_WEEKLY_MINUTE: ${CRON_WEEKLY_MINUTE:-10}
+
+
+networks:
+  eap-network:
+    external: true

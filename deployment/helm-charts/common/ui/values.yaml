@@ -1,0 +1,98 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+replicaCount: 1
+
+image:
+  repository: ekba/ui
+  # Uncomment the following line to set desired image pull policy if needed, as one of Always, IfNotPresent, Never.
+  # pullPolicy: ""
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # Currently comment the securityContext settings
+  # as the inappropriate settings within Conversational UI (need root privilege)
+  # issue: https://github.com/opea-project/GenAIExamples/issues/517
+  # readOnlyRootFilesystem: true
+  # allowPrivilegeEscalation: false
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # seccompProfile:
+  #   type: RuntimeDefault
+
+# internal container port
+# conventional ui container port: 5173, conversational ui container port: 80
+containerPort: 80
+
+service:
+  type: ClusterIP
+  port: 5174
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: ui
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 24
+readinessProbe:
+  httpGet:
+    path: /
+    port: ui
+  initialDelaySeconds: 5
+  periodSeconds: 5
+startupProbe:
+  httpGet:
+    path: /
+    port: ui
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 120
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+APP_BACKEND_ENDPOINT: http://localhost:8888
+APP_DATAPREP_ENDPOINT: http://localhost:6007
+APP_CHATHISTORY_ENDPOINT: http://localhost:8012
+APP_LLM_ENDPOINT: http://localhost:9000
+APP_KBS_ENDPOINT: http://localhost:7000
+APP_DOWNLOAD_SERVER: http://localhost:9100
+
+global:
+  # service account name to be shared with all parent/child charts.
+  # If set, it will overwrite serviceAccount.name.
+  # If set, and serviceAccount.create is false, it will assume this service account is already created by others.
+  sharedSAName: ""

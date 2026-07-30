@@ -1,0 +1,41 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "reranking-usvc.fullname" . }}-config
+  labels:
+    {{- include "reranking-usvc.labels" . | nindent 4 }}
+data:
+  {{- if eq "TEI" .Values.RERANK_BACKEND }}
+  RERANK_COMPONENT_NAME: "OPEA_TEI_RERANKING"
+  {{- if .Values.TEI_RERANKING_ENDPOINT }}
+  TEI_RERANKING_ENDPOINT: {{ .Values.TEI_RERANKING_ENDPOINT | quote }}
+  {{- else }}
+  TEI_RERANKING_ENDPOINT: "http://{{ .Release.Name }}-reranking"
+  {{- end }}
+  {{- else if eq "VideoRerank" .Values.RERANK_BACKEND }}
+  RERANK_COMPONENT_NAME: "OPEA_VIDEO_RERANKING"
+  CHUNK_DURATION: {{ .Values.CHUNK_DURATION | quote }}
+  FILE_SERVER_ENDPOINT: {{ .Values.FILE_SERVER_ENDPOINT | quote }}
+  {{- else if eq "OVMS" .Values.RERANK_BACKEND }}
+  EMBEDDING_RERANKER_BACKEND: "ovms"
+  {{- if .Values.OVMS_RERANKING_ENDPOINT }}
+  OVMS_RERANKING_ENDPOINT: {{ tpl .Values.OVMS_RERANKING_ENDPOINT . | quote}}
+  {{- else }}
+  OVMS_RERANKING_ENDPOINT: "http://{{ .Release.Name }}-reranking/v3"
+  {{- end }}
+  OVMS_RERANKING_MODEL: {{ .Values.OVMS_RERANKING_MODEL }}
+  embedding_ctx_length: {{ .Values.embedding_ctx_length | quote }}
+  {{- else }}
+  {{- cat "Invalid RERANK_BACKEND:" .Values.RERANK_BACKEND | fail }}
+  {{- end }}
+  http_proxy: {{ .Values.global.http_proxy | quote }}
+  https_proxy: {{ .Values.global.https_proxy | quote }}
+  {{- if and (not .Values.TEI_RERANKING_ENDPOINT) (or .Values.global.http_proxy .Values.global.https_proxy) }}
+  no_proxy: "{{ .Release.Name }}-reranking,{{ .Values.global.no_proxy }}"
+  {{- else }}
+  no_proxy: {{ .Values.global.no_proxy | quote }}
+  {{- end }}
+  LOG_LEVEL: {{ .Values.LOG_LEVEL | quote }}

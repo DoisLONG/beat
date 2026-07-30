@@ -1,0 +1,63 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "data-prep.fullname" . }}-config
+  labels:
+    {{- include "data-prep.labels" . | nindent 4 }}
+data:
+  #  {{- if .Values.TEI_EMBEDDING_ENDPOINT }}
+  #  TEI_EMBEDDING_ENDPOINT: {{ tpl .Values.TEI_EMBEDDING_ENDPOINT . | quote}}
+  #  {{- else if not .Values.LOCAL_EMBEDDING_MODEL }}
+  #  TEI_EMBEDDING_ENDPOINT: "http://{{ .Release.Name }}-tei"
+  #  {{- end }}
+  {{- if .Values.OVMS_EMBEDDING_ENDPOINT }}
+  OVMS_EMBEDDING_ENDPOINT: {{ tpl .Values.OVMS_EMBEDDING_ENDPOINT . | quote}}
+  {{- else if not .Values.LOCAL_EMBEDDING_MODEL }}
+  OVMS_EMBEDDING_ENDPOINT: "http://{{ .Release.Name }}-tei/v3"
+  {{- end }}
+  OVMS_EMBEDDING_MODEL: {{ .Values.OVMS_EMBEDDING_MODEL }}
+  {{- if eq "REDIS" .Values.DATAPREP_BACKEND }}
+  DATAPREP_COMPONENT_NAME: "OPEA_DATAPREP_REDIS"
+  {{- if .Values.REDIS_HOST }}
+  REDIS_HOST: {{ tpl .Values.REDIS_HOST . | quote}}
+  {{- else }}
+  REDIS_HOST: "{{ .Release.Name }}-redis-vector-db"
+  {{- end }}
+  REDIS_PORT: {{ .Values.REDIS_PORT | quote }}
+  REDIS_SSL: {{ .Values.REDIS_SSL | quote }}
+  REDIS_PASSWORD: {{ .Values.REDIS_PASSWORD | quote }}
+  REDIS_USERNAME: {{ .Values.REDIS_USERNAME | quote }}
+  INDEX_NAME: {{ .Values.INDEX_NAME | quote }}
+  KEY_INDEX_NAME: {{ .Values.KEY_INDEX_NAME | quote }}
+  SEARCH_BATCH_SIZE: {{ .Values.SEARCH_BATCH_SIZE | quote }}
+  EMBED_MODEL: {{ .Values.LOCAL_EMBEDDING_MODEL | default "" | quote }}
+  {{- else if eq "MILVUS" .Values.DATAPREP_BACKEND }}
+  DATAPREP_COMPONENT_NAME: "OPEA_DATAPREP_MILVUS"
+  {{- if .Values.MILVUS_HOST }}
+  MILVUS_HOST: {{ tpl .Values.MILVUS_HOST . | quote }}
+  {{- else }}
+  MILVUS_HOST: "{{ .Release.Name }}-milvus"
+  {{- end }}
+  MILVUS_PORT: {{ .Values.MILVUS_PORT | quote }}
+  COLLECTION_NAME: {{ .Values.COLLECTION_NAME | quote }}
+  LOCAL_EMBEDDING_MODEL: {{ .Values.LOCAL_EMBEDDING_MODEL | default "" | quote }}
+  {{- else }}
+  {{- cat "Invalid DATAPREP_BACKEND:" .Values.DATAPREP_BACKEND | fail }}
+  {{- end }}
+  HUGGINGFACEHUB_API_TOKEN: {{ .Values.global.HUGGINGFACEHUB_API_TOKEN | quote}}
+  HUGGINGFACE_HUB_CACHE: "/data"
+  HF_HOME: "/tmp/.cache/huggingface"
+  {{- if .Values.global.HF_ENDPOINT }}
+  HF_ENDPOINT: {{ .Values.global.HF_ENDPOINT | quote}}
+  {{- end }}
+  http_proxy: {{ .Values.global.http_proxy | quote }}
+  https_proxy: {{ .Values.global.https_proxy | quote }}
+  {{- if and (and (not .Values.MILVUS_HOST ) (not .Values.REDIS_HOST)) (and (not .Values.TEI_EMBEDDING_ENDPOINT) (or .Values.global.http_proxy .Values.global.https_proxy)) }}
+  no_proxy: "{{ .Release.Name }}-tei,{{ .Release.Name }}-redis-vector-db,{{ .Release.Name }}-milvus,{{ .Values.global.no_proxy }}"
+  {{- else }}
+  no_proxy: {{ .Values.global.no_proxy | quote }}
+  {{- end }}
+  LOG_LEVEL: {{ .Values.LOG_LEVEL | quote }}

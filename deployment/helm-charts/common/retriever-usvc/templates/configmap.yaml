@@ -1,0 +1,54 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "retriever-usvc.fullname" . }}-config
+  labels:
+    {{- include "retriever-usvc.labels" . | nindent 4 }}
+data:
+  {{- if .Values.TEI_EMBEDDING_ENDPOINT }}
+  TEI_EMBEDDING_ENDPOINT: {{ tpl .Values.TEI_EMBEDDING_ENDPOINT . | quote }}
+  {{- else if not .Values.LOCAL_EMBEDDING_MODEL }}
+  TEI_EMBEDDING_ENDPOINT: "http://{{ .Release.Name }}-embedding"
+  {{- end }}
+  {{- if .Values.OVMS_EMBEDDING_ENDPOINT }}
+  OVMS_EMBEDDING_ENDPOINT: {{ tpl .Values.OVMS_EMBEDDING_ENDPOINT . | quote}}
+  {{- else if not .Values.LOCAL_EMBEDDING_MODEL }}
+  OVMS_EMBEDDING_ENDPOINT: "http://{{ .Release.Name }}-embedding/v3"
+  {{- end }}
+  OVMS_EMBEDDING_MODEL: {{ .Values.OVMS_EMBEDDING_MODEL }}
+  {{- if eq "MILVUS" .Values.RETRIEVER_BACKEND }}
+  RETRIEVER_COMPONENT_NAME: "OPEA_RETRIEVER_MILVUS"
+  {{- if .Values.MILVUS_HOST }}
+  MILVUS_HOST: {{ tpl .Values.MILVUS_HOST . | quote }}
+  {{- else }}
+  MILVUS_HOST: "{{ .Release.Name }}-milvus"
+  {{- end }}
+  MILVUS_PORT: {{ .Values.MILVUS_PORT | quote }}
+  COLLECTION_NAME: {{ .Values.COLLECTION_NAME | quote }}
+  LOCAL_EMBEDDING_MODEL: {{ .Values.LOCAL_EMBEDDING_MODEL | quote }}
+  {{- else }}
+  {{- cat "Invalid RETRIEVER_BACKEND:" .Values.RETRIEVER_BACKEND | fail }}
+  {{- end }}
+  {{- if .Values.global.HF_HUB_OFFLINE }}
+  HF_HUB_OFFLINE: {{ .Values.global.HF_HUB_OFFLINE | quote}}
+  {{- end }}
+  {{- if .Values.global.HF_ENDPOINT }}
+  HF_ENDPOINT: {{ .Values.global.HF_ENDPOINT | quote}}
+  {{- end }}
+  EASYOCR_MODULE_PATH: "/tmp/.EasyOCR"
+  http_proxy: {{ .Values.global.http_proxy | quote }}
+  https_proxy: {{ .Values.global.https_proxy | quote }}
+  {{- if and (and (not .Values.MILVUS_HOST ) (not .Values.REDIS_HOST)) (and (not .Values.TEI_EMBEDDING_ENDPOINT) (or .Values.global.http_proxy .Values.global.https_proxy)) }}
+  no_proxy: "{{ .Release.Name }}-embedding,{{ .Release.Name }}-redis-vector-db,{{ .Release.Name }}-milvus,{{ .Values.global.no_proxy }}"
+  {{- else }}
+  no_proxy: {{ tpl .Values.global.no_proxy . | quote }}
+  {{- end }}
+  # HF_HOME: "/tmp/.cache/huggingface"
+  HUGGINGFACE_HUB_CACHE: "/home/app/.cache/huggingface/hub/"
+  HUGGINGFACEHUB_API_TOKEN: {{ .Values.global.HUGGINGFACEHUB_API_TOKEN | quote }}
+  LOG_LEVEL: {{ .Values.LOG_LEVEL | quote }}
+  EMBEDDING_RERANKER_BACKEND: {{ .Values.EMBEDDING_RERANKER_BACKEND | quote }}  
+  embedding_ctx_length: {{ .Values.embedding_ctx_length | quote }}

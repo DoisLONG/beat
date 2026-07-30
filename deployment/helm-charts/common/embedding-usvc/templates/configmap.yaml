@@ -1,0 +1,59 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "embedding-usvc.fullname" . }}-config
+  labels:
+    {{- include "embedding-usvc.labels" . | nindent 4 }}
+data:
+  {{- if eq "TEI" .Values.EMBEDDING_BACKEND }}
+  EMBEDDING_COMPONENT_NAME: "OPEA_TEI_EMBEDDING"
+  MULTIMODAL_EMBEDDING: "false"
+  {{- if .Values.EMBEDDING_ENDPOINT }}
+  TEI_EMBEDDING_ENDPOINT: {{ tpl .Values.EMBEDDING_ENDPOINT . | quote }}
+  {{- else }}
+  TEI_EMBEDDING_ENDPOINT: "http://{{ .Release.Name }}-embedding"
+  {{- end }}
+  {{- else if eq "PredictionGuard" .Values.EMBEDDING_BACKEND }}
+  MULTIMODAL_EMBEDDING: "false"
+  EMBEDDING_COMPONENT_NAME: "OPEA_PREDICTIONGUARD_EMBEDDING"
+  PG_EMBEDDING_MODEL_NAME: {{ .Values.PG_EMBEDDING_MODEL_NAME | quote }}
+  PREDICTIONGUARD_API_KEY: {{ .Values.PREDICTIONGUARD_API_KEY | quote }}
+  {{- else if eq "BridgeTower" .Values.EMBEDDING_BACKEND }}
+  MULTIMODAL_EMBEDDING: "true"
+  EMBEDDING_COMPONENT_NAME: "OPEA_MULTIMODAL_EMBEDDING_BRIDGETOWER"
+  {{- if .Values.EMBEDDING_ENDPOINT }}
+  MMEI_EMBEDDING_ENDPOINT: {{ tpl .Values.EMBEDDING_ENDPOINT . | quote }}
+  {{- else }}
+  MMEI_EMBEDDING_ENDPOINT: "http://{{ .Release.Name }}-mm-embedding"
+  {{- end }}
+  {{- else if eq "OVMS" .Values.EMBEDDING_BACKEND }}
+  {{- if .Values.OVMS_EMBEDDING_ENDPOINT }}
+  OVMS_EMBEDDING_ENDPOINT: {{ tpl .Values.OVMS_EMBEDDING_ENDPOINT . | quote}}
+  {{- else if not .Values.LOCAL_EMBEDDING_MODEL }}
+  OVMS_EMBEDDING_ENDPOINT: "http://{{ .Release.Name }}-embedding/v3"
+  {{- end }}
+  OVMS_EMBEDDING_MODEL: {{ .Values.OVMS_EMBEDDING_MODEL | quote }}
+  embedding_ctx_length: {{ .Values.embedding_ctx_length | quote }}
+  {{- else }}
+  {{- cat "Invalid EMBEDDING_BACKEND:" .Values.EMBEDDING_BACKEND | fail }}
+  {{- end }}
+  # TRANSFORMERS_CACHE: "/tmp/transformers_cache"
+  # HF_HOME: "/tmp/.cache/huggingface"
+  HUGGINGFACE_HUB_CACHE: "/home/user/.cache/huggingface/hub/"
+  {{- if .Values.global.HF_ENDPOINT }}
+  HF_ENDPOINT: {{ .Values.global.HF_ENDPOINT | quote}}
+  {{- end }}
+  {{- if .Values.global.HF_HUB_OFFLINE }}
+  HF_HUB_OFFLINE: {{ .Values.global.HF_HUB_OFFLINE | quote}}
+  {{- end }}
+  http_proxy: {{ .Values.global.http_proxy | quote }}
+  https_proxy: {{ .Values.global.https_proxy | quote }}
+  {{- if and (not .Values.TEI_EMBEDDING_ENDPOINT) (or .Values.global.http_proxy .Values.global.https_proxy) }}
+  no_proxy: "{{ .Release.Name }}-embedding,{{ .Release.Name }}-mm-embedding,{{ .Values.global.no_proxy }}"
+  {{- else }}
+  no_proxy: {{ .Values.global.no_proxy | quote }}
+  {{- end }}
+  LOG_LEVEL: {{ .Values.LOG_LEVEL | quote }}

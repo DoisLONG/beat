@@ -1,0 +1,17 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+global:
+  REGISTRY: gar-registry.caas.intel.com/
+image:
+  tag: v2.0b
+service:
+  type: NodePort
+
+APP_BACKEND_ENDPOINT: http://router-chatqna:8888
+APP_CHATHISTORY_ENDPOINT: http://chathistory-chathistory-usvc:6012
+APP_LLM_ENDPOINT: http://llm-llm-uservice:9000
+APP_KBS_ENDPOINT: http://retriever-retriever-usvc:7000
+APP_DOWNLOAD_SERVER: http://minio:9000
+# APP_KBADMIN_BACKEND_ENDPOINT: "http://kbadmin:9380"
+# APP_DATAPREP_ENDPOINT: http://localhost:6007

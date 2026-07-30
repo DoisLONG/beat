@@ -1,0 +1,40 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "llm-uservice.fullname" . }}-testpod"
+  labels:
+    {{- include "llm-uservice.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    #"helm.sh/hook-delete-policy": "hook-succeeded, hook-failure"
+spec:
+  containers:
+    - name: curl
+      image: python:3.10.14
+      command: ['bash', '-c']
+      args:
+        - |
+          {{- if contains "llm-docsum" .Values.image.repository }}
+          url="http://{{ include "llm-uservice.fullname" . }}:{{ .Values.service.port }}/v1/docsum";
+          body='{"messages":"Text Embeddings Inference (TEI) is a toolkit for deploying and serving open source text embeddings and sequence classification models. TEI enables high-performance extraction for the most popular models, including FlagEmbedding, Ember, GTE and E5.","max_tokens":17}';
+          {{- else if contains "llm-faqgen" .Values.image.repository }}
+          url="http://{{ include "llm-uservice.fullname" . }}:{{ .Values.service.port }}/v1/faqgen";
+          body='{"messages":"Text Embeddings Inference (TEI) is a toolkit for deploying and serving open source text embeddings and sequence classification models. TEI enables high-performance extraction for the most popular models, including FlagEmbedding, Ember, GTE and E5.","max_tokens":17}';
+          {{- else }}
+          url="http://{{ include "llm-uservice.fullname" . }}:{{ .Values.service.port }}/v1/chat/completions";
+          body='{"model": "{{ .Values.LLM_MODEL_ID }}", "messages": [{"role": "user", "content": "What is Deep Learning?"}], "max_tokens":17}';
+          {{- end }}
+          max_retry=20;
+          for ((i=1; i<=max_retry; i++)); do
+            curl "$url" -sS --fail-with-body \
+              -X POST \
+              -d "$body" \
+              -H 'Content-Type: application/json' && break;
+            curlcode=$?
+            if [[ $curlcode -eq 7 ]]; then sleep 10; else echo "curl failed with code $curlcode"; exit 1; fi;
+          done;
+          if [ $i -gt $max_retry ]; then echo "test failed with maximum retry"; exit 1; fi
+  restartPolicy: Never

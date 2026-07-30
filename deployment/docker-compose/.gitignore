@@ -1,0 +1,9 @@
+.env
+upload_files/
+milvus-data/
+mongo-data/
+minio-data/
+mysql-data/
+redis-data/
+logs/
+kbs-info/

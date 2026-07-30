@@ -1,0 +1,126 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# Default values for llm-uservice.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Configurations for OPEA microservice llm-uservice
+# Set it as a non-null string, such as true, if you want to enable logging.
+LOG_LEVEL: ""
+FILTER_QUERIES: 0
+
+# settings for llm-textgen service
+# backend inference engine to use, i.e. TGI, vLLM
+TEXTGEN_BACKEND: "TGI"
+
+# settings for llm-docsum service
+# backend inference engine to use, i.e. TGI, vLLM
+DOCSUM_BACKEND: "TGI"
+MAX_INPUT_TOKENS: ""
+MAX_TOTAL_TOKENS: ""
+
+# settings for llm-faqgen
+# backend inference engine to use, i.e. TGI, vLLM
+FAQGEN_BACKEND: "TGI"
+
+# settings for llm-textgen, llm-docsum, llm-faqgen
+# model used by the inference backend
+LLM_MODEL_ID: "/weights/DeepSeek-R1-Distill-Qwen-32B"
+# inference backend URL, e.g. http://tgi:80
+LLM_ENDPOINT: ""
+
+replicaCount: 1
+
+image:
+  repository: ekba/llm
+  # Uncomment the following line to set desired image pull policy if needed, as one of Always, IfNotPresent, Never.
+  # pullPolicy: ""
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+service:
+  type: ClusterIP
+  # The default port for llm service is 9000
+  port: 9000
+
+resources:
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+readinessProbe:
+  httpGet:
+    path: v1/health_check
+    port: llm-uservice
+  initialDelaySeconds: 5
+  periodSeconds: 5
+startupProbe:
+  httpGet:
+    path: v1/health_check
+    port: llm-uservice
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 120
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+global:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  # service account name to be shared with all parent/child charts.
+  # If set, it will overwrite serviceAccount.name.
+  # If set, and serviceAccount.create is false, it will assume this service account is already created by others.
+  sharedSAName: ""
+
+  # Install Prometheus serviceMonitor for service
+  monitoring: false
+
+  # Prometheus Helm install release name for serviceMonitor
+  prometheusRelease: prometheus-stack
+
+# for CI tests only
+tgi:
+  enabled: false
+vllm:
+  enabled: false

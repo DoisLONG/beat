@@ -1,0 +1,26 @@
+# Copyright (C) 2026 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+services:
+  hf-tei-embedding:
+    container_name: hf-tei-embedding-serving
+    image: ${REGISTRY:-localhost:5000}/ekba/backends/text-embeddings-inference:cpu-1.5
+    restart: unless-stopped
+    volumes:
+      - "${MODEL_CACHE:-./data}:/data"
+    networks:
+      - eap-network
+    ports:
+      - ${TEI_EMBEDDING_PORT:-13020}:80
+
+    environment:
+      HF_HUB_DISABLE_PROGRESS_BARS: 1
+      HF_HUB_ENABLE_HF_TRANSFER: 0
+
+    command:
+      - --model-id
+      - /data/bge-large-en-v1.5   # 这里指向你本地挂载进去的模型目录
+networks:
+  eap-network:
+    external: true
