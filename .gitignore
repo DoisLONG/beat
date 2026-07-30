@@ -28,3 +28,6 @@ compile_commands.json
 
 # py
 __pycache__
+
+# local backup files
+*.bak

@@ -11,7 +11,7 @@ function _coloring() {
 }
 
 DEFAULT_MODEL_CONFIG_ENCRYPTION_KEY="fd90Zn9EmvWbHtAyjP9bApzes-DtPcvHOXyAs-_QPjU="
-DEFAULT_INTERNAL_API_KEY="sk-50f1809932d54d958040350ac90bec60"
+DEFAULT_INTERNAL_API_KEY=""
 
 # helper function to confirm default value
 function confirm_or_new() {
@@ -97,7 +97,7 @@ confirm_or_new "BAILIAN_EMBEDDING_ENDPOINT" "https://dashscope.aliyuncs.com/comp
 confirm_or_new "BAILIAN_EMBEDDING_MODEL" "text-embedding-v4" "BAILIAN EMBEDDING MODEL"
 
 # BAILIAN_EMBEDDING_API_KEY
-confirm_secret_or_default "BAILIAN_EMBEDDING_API_KEY" "${DEFAULT_INTERNAL_API_KEY}" "Internal default key is available and will be used if left empty"
+confirm_secret_or_default "BAILIAN_EMBEDDING_API_KEY" "${DEFAULT_INTERNAL_API_KEY}" "Please input your own API key. Leave empty only if a local or mock model service is configured"
 
 # DATAPREP_LLM_ENDPOINT
 confirm_or_new "DATAPREP_LLM_PROVIDER" "dashscope" "DATAPREP LLM provider"
@@ -107,14 +107,14 @@ confirm_or_new "DATAPREP_LLM_MODEL" "qwen3-max" "DATAPREP LLM MODEL"
 confirm_or_new "ASR_LLM_MODEL" "${DATAPREP_LLM_MODEL}" "ASR postprocess LLM model (defaults to DATAPREP_LLM_MODEL)"
 
 # DATAPREP_LLM_API_KEY (no default, must input)
-confirm_secret_or_default "DATAPREP_LLM_API_KEY" "${DEFAULT_INTERNAL_API_KEY}" "Internal default key is available and will be used if left empty"
+confirm_secret_or_default "DATAPREP_LLM_API_KEY" "${DEFAULT_INTERNAL_API_KEY}" "Please input your own API key. Leave empty only if a local or mock model service is configured"
 
 # SMART_PRACTICE_LLM
 confirm_or_new "SMART_PRACTICE_LLM_PROVIDER" "dashscope" "SMART PRACTICE LLM provider"
 confirm_or_new "SMART_PRACTICE_LLM_ENDPOINT" "https://dashscope.aliyuncs.com/compatible-mode/v1" "SMART PRACTICE LLM endpoint"
 confirm_or_new "SMART_PRACTICE_LLM_MODEL" "qwen-turbo" "SMART PRACTICE LLM model"
 
-confirm_secret_or_default "SMART_PRACTICE_LLM_API_KEY" "${DEFAULT_INTERNAL_API_KEY}" "Internal default key is available and will be used if left empty"
+confirm_secret_or_default "SMART_PRACTICE_LLM_API_KEY" "${DEFAULT_INTERNAL_API_KEY}" "Please input your own API key. Leave empty only if a local or mock model service is configured"
 
 # ASR (optional)
 confirm_or_new "ASR_PROVIDER" "env" "ASR provider"
@@ -122,7 +122,7 @@ confirm_or_new "ASR_TRANSPORT" "http" "ASR transport: http or local"
 confirm_or_new "ASR_API_KEY" "" "ASR API key"
 confirm_or_new "ASR_RUNTIME_OPTIONS_JSON" "" "ASR runtime options JSON for local mode, e.g. {\"engine\":\"faster_whisper\",\"device\":\"auto\"}"
 confirm_or_new "ASR_ENGINE" "qwen" "ASR engine, e.g. qwen or faster_whisper"
-confirm_or_new "ASR_ENDPOINT" "https://183.95.195.121:31439/qwen3-asr/v1/audio/transcriptions" "Remote ASR transcription endpoint"
+confirm_or_new "ASR_ENDPOINT" "" "Remote ASR transcription endpoint"
 confirm_or_new "ASR_MODEL" "Qwen/Qwen3-ASR-1.7B" "ASR model name"
 confirm_or_new "ASR_SSL_VERIFY" "false" "Verify TLS certificate when calling remote ASR? (true/false)"
 if [ "$ASR_ENGINE" == "faster_whisper" ]; then
@@ -142,7 +142,7 @@ fi
 # MAGIC_PDF_MODEL
 confirm_or_new "MAGIC_PDF_MODEL_PATH" "/opt/models" "PDF MODEL PATH"
 confirm_or_new "MAGIC_PDF_REMOTE_ENABLED" "true" "Enable remote magic-pdf parse"
-confirm_or_new "MAGIC_PDF_PARSE_URL" "http://183.95.195.121:31439/magic-pdf/parse" "Magic-pdf parse URL"
+confirm_or_new "MAGIC_PDF_PARSE_URL" "" "Magic-pdf parse URL"
 confirm_or_new "MAGIC_PDF_PARSE_METHOD" "auto" "Magic-pdf parse method"
 confirm_or_new "MAGIC_PDF_PARSE_LANG" "ch_server" "Magic-pdf parse language"
 
