@@ -379,6 +379,14 @@ The cloud-native architecture shows how BEAT separates offline knowledge prepara
 
 
 
+## Demo Guide
+
+A step-by-step demo guide is available here:
+
+- [Demo Guide](docs/demo-guide.md)
+
+---
+
 ## Technical Report
 
 The technical report for the AI for Good OPEA challenge submission is available here:
