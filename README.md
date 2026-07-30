@@ -357,3 +357,22 @@ This demo environment is provided for evaluation and functional review. It is a 
 
 If a browser shows a certificate warning, please continue to the site for demo evaluation.
 
+
+
+
+## Architecture Diagrams
+
+### Engine Overview
+
+![BEAT Engine Overview](docs/engine-overview.svg)
+
+The engine overview shows how BEAT connects enterprise training scenarios, learning and practice capabilities, AI services, model tools, knowledge bases, user behavior data, infrastructure resources, and multi-device access.
+
+### Cloud-native Architecture
+
+![BEAT Cloud-native Architecture](docs/cloud-native-architecture.svg)
+
+The cloud-native architecture shows how BEAT separates offline knowledge preparation, online RAG knowledge services, conversation services, vector database services, and LLM inference services. This design supports modular deployment, scalable service composition, and CPU/GPU-based inference integration.
+
+---
+
