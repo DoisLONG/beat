@@ -103,7 +103,7 @@ TOTAL_ROUNDS = int(os.getenv("TOTAL_ROUNDS", 10))
 MAGIC_PDF_REMOTE_ENABLED = os.getenv("MAGIC_PDF_REMOTE_ENABLED", "true").strip().lower() not in {
     "0", "false", "off", "no"
 }
-MAGIC_PDF_PARSE_URL = os.getenv("MAGIC_PDF_PARSE_URL", "http://183.95.195.121:31439/magic-pdf/parse")
+MAGIC_PDF_PARSE_URL = os.getenv("MAGIC_PDF_PARSE_URL", "")
 MAGIC_PDF_PARSE_METHOD = os.getenv("MAGIC_PDF_PARSE_METHOD", "auto")
 MAGIC_PDF_PARSE_LANG = os.getenv("MAGIC_PDF_PARSE_LANG", "ch_server")
 MAGIC_PDF_PARSE_CONNECT_TIMEOUT = float(os.getenv("MAGIC_PDF_PARSE_CONNECT_TIMEOUT", "10"))

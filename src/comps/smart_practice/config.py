@@ -13,7 +13,7 @@ TEI_EMBEDDING_ENDPOINT = os.getenv("TEI_EMBEDDING_ENDPOINT", "")
 # Env fallbacks (will be handled by resolver, but kept here for explicit reference if needed)
 BAILIAN_EMBEDDING_ENDPOINT = os.getenv("BAILIAN_EMBEDDING_ENDPOINT", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 BAILIAN_EMBEDDING_MODEL = os.getenv("BAILIAN_EMBEDDING_MODEL", "text-embedding-v4")
-BAILIAN_EMBEDDING_API_KEY = os.getenv("BAILIAN_EMBEDDING_API_KEY", "sk-50f1809932d54d958040350ac90bec60")
+BAILIAN_EMBEDDING_API_KEY = os.getenv("BAILIAN_EMBEDDING_API_KEY", "")
 
 # MILVUS configuration
 MILVUS_HOST = os.getenv("MILVUS_HOST", "localhost")

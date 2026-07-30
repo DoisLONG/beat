@@ -25,7 +25,7 @@ TMP_DIR = DATA_DIR / "tmp"
 EXCEL_ASR_BASE_URL = os.getenv("EXCEL_ASR_BASE_URL", "http://127.0.0.1:8000").strip()
 DATAPREP_LLM_ENDPOINT = os.getenv("DATAPREP_LLM_ENDPOINT", "https://dashscope.aliyuncs.com/compatible-mode/v1").strip()
 DATAPREP_LLM_MODEL = os.getenv("DATAPREP_LLM_MODEL", "qwen-max").strip()
-DATAPREP_LLM_API_KEY = os.getenv("DATAPREP_LLM_API_KEY", "sk-50f1809932d54d958040350ac90bec60").strip()
+DATAPREP_LLM_API_KEY = os.getenv("DATAPREP_LLM_API_KEY", "").strip()
 
 SOP_UPLOAD_URL = os.getenv("SOP_UPLOAD_URL", "http://10.3.70.118:6007/v1/dataprep/generate_qa").strip()
 SOP_UPLOAD_FILE_FIELD = os.getenv("SOP_UPLOAD_FILE_FIELD", "files").strip()

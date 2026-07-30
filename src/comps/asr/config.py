@@ -31,13 +31,13 @@ TMP_DIR = DATA_DIR / "tmp"
 GLOSSARY_FILE = DATA_DIR / "glossary.json"
 
 DATAPREP_LLM_PROVIDER = os.getenv("DATAPREP_LLM_PROVIDER", "dashscope").strip().lower()
-DATAPREP_LLM_API_KEY = os.getenv("DATAPREP_LLM_API_KEY", "sk-50f1809932d54d958040350ac90bec60")
+DATAPREP_LLM_API_KEY = os.getenv("DATAPREP_LLM_API_KEY", "").strip()
 DATAPREP_LLM_ENDPOINT = os.getenv("DATAPREP_LLM_ENDPOINT", "https://dashscope.aliyuncs.com/compatible-mode/v1").strip()
 DATAPREP_LLM_MODEL = os.getenv("DATAPREP_LLM_MODEL", "qwen3-max").strip()
 ASR_LLM_MODEL = os.getenv("ASR_LLM_MODEL", "").strip()
 
 ASR_API_KEY = os.getenv("ASR_API_KEY", "").strip()
-ASR_ENDPOINT = os.getenv("ASR_ENDPOINT", "https://183.95.195.121:31439/qwen3-asr/v1/audio/transcriptions").strip()
+ASR_ENDPOINT = os.getenv("ASR_ENDPOINT", "").strip()
 ASR_MODEL = os.getenv("ASR_MODEL", "Qwen/Qwen3-ASR-1.7B").strip()
 ASR_ENGINE = os.getenv("ASR_ENGINE", "qwen").strip().lower()
 ASR_MAX_WORKERS = int(os.getenv("ASR_MAX_WORKERS", "2"))
